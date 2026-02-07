@@ -124,7 +124,7 @@ async function runIntroOneByOne() {
 
   // Rose entrance + guitar note
   rose.classList.add("flyIn");
-  safePlayLoose(audGuitar, 0.75);
+  setTimeout(() => safePlayLoose(audGuitar, 0.75), 220);
 
   await sleep(1200);
 
