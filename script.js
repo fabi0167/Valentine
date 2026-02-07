@@ -72,7 +72,7 @@ async function runIntroOneByOne() {
     await sleep(80);
     introSingleLine.classList.add("show");
 
-    await sleep(2200); // how long it stays visible
+    await sleep(3500); // how long it stays visible
     introSingleLine.classList.add("hide");
 
     await sleep(900); // fade-out time
