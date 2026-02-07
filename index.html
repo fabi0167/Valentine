@@ -33,43 +33,74 @@
       <div class="toast" id="toast" aria-live="polite"></div>
     </section>
 
-    <!-- Gifts -->
-    <section class="gifts hidden" id="gifts">
-      <h2>🎁 Your gifts</h2>
+    <!-- YES Sequence Overlay (keeps background) -->
+    <section class="sequence hidden" id="sequence">
+      <div class="seqCenter">
+        <div class="seqText hidden" id="seqText"></div>
 
-      <div class="gift-grid">
-        <div class="gift">
-          <div class="giftTitle">1) LOVE stone 🪨</div>
-          <div class="giftBody">
-            <img id="stoneImg" class="giftImg hidden" alt="Love stone" />
-            <div class="giftFallback">🪨 LOVE</div>
-          </div>
+        <img class="seqImg hidden" id="seqImg" alt="" />
+
+        <div class="seqGtrWrap hidden" id="seqGtrWrap" aria-hidden="true">
+          <img class="seqGtr" id="seqGtr" alt="Nissan GTR" />
         </div>
 
-        <div class="gift">
-          <div class="giftTitle">2) Camera kiss 😘</div>
-          <div class="giftBody">
-            <img id="kissImg" class="giftImg hidden" alt="Kissing cat" />
-            <div class="giftFallback">😽💋</div>
-          </div>
-        </div>
-
-        <div class="gift">
-          <div class="giftTitle">3) Spinning bouquet cat 🌸</div>
-          <div class="giftBody">
-            <img id="spinImg" class="giftImg hidden" alt="Spinning cat with bouquet" />
-            <div class="giftFallback">🐱🌀💐</div>
-          </div>
+        <div class="photoRing hidden" id="photoRing">
+          <img class="ringPhoto" id="us1" alt="Us photo 1" />
+          <img class="ringPhoto" id="us2" alt="Us photo 2" />
+          <img class="ringPhoto" id="us3" alt="Us photo 3" />
+          <img class="ringPhoto" id="us4" alt="Us photo 4" />
         </div>
       </div>
-
-      <button id="againBtn" class="btn again">Replay ✨</button>
     </section>
 
-    <!-- Optional audio -->
-    <audio id="audKiss" preload="auto" src="assets/kiss.mp3"></audio>
+    <!-- Final page: all gifts + all photos -->
+    <section class="finalPage hidden" id="finalPage">
+      <div class="finalCard">
+        <h2 class="finalTitle">All your gifts 💝</h2>
+
+        <div class="finalGrid">
+          <div class="finalItem">
+            <div class="finalItemTitle">LOVE Stone</div>
+            <img id="finalStone" alt="Love stone" />
+          </div>
+
+          <div class="finalItem">
+            <div class="finalItemTitle">Cat kiss</div>
+            <img id="finalKissCat" alt="Kissing cat" />
+          </div>
+
+          <div class="finalItem">
+            <div class="finalItemTitle">Cat with flowers</div>
+            <img id="finalFlowerCat" alt="Cat with flowers" />
+          </div>
+
+          <div class="finalItem">
+            <div class="finalItemTitle">Nissan GTR</div>
+            <img id="finalGtr" alt="Nissan GTR" />
+          </div>
+        </div>
+
+        <h2 class="finalTitle" style="margin-top:22px;">Us 💞</h2>
+        <div class="finalPhotos">
+          <img id="finalUs1" alt="Us 1" />
+          <img id="finalUs2" alt="Us 2" />
+          <img id="finalUs3" alt="Us 3" />
+          <img id="finalUs4" alt="Us 4" />
+        </div>
+
+        <button id="restartBtn" class="btn again">Restart ✨</button>
+      </div>
+    </section>
+
+    <!-- Audio -->
     <audio id="audPop" preload="auto" src="assets/pop.mp3"></audio>
+    <audio id="audKiss" preload="auto" src="assets/kiss.mp3"></audio>
     <audio id="audConfetti" preload="auto" src="assets/confetti.mp3"></audio>
+
+    <!-- NEW -->
+    <audio id="audYuppi" preload="auto" src="assets/yuppi.mp3"></audio>
+    <audio id="audSong" preload="auto" src="assets/celebration-song.mp3" loop></audio>
+    <audio id="audEngine" preload="auto" src="assets/engine.mp3"></audio>
   </main>
 
   <script src="script.js"></script>

@@ -1,34 +1,56 @@
-// --- Elements
+// ===== Elements =====
 const confettiCanvas = document.getElementById("confetti");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const toast = document.getElementById("toast");
 const card = document.getElementById("card");
-const gifts = document.getElementById("gifts");
-const againBtn = document.getElementById("againBtn");
 
-// Optional audio
-const audKiss = document.getElementById("audKiss");
-const audPop = document.getElementById("audPop");
-const audConfetti = document.getElementById("audConfetti");
-
-// Gift images (optional)
-const stoneImg = document.getElementById("stoneImg");
-const kissImg  = document.getElementById("kissImg");
-const spinImg  = document.getElementById("spinImg");
-
-// Intro elements (one-line)
+// Intro
 const intro = document.getElementById("intro");
 const introSingleLine = document.getElementById("introSingleLine");
 const rose = document.getElementById("rose");
 
-// --- State
+// YES sequence
+const sequence = document.getElementById("sequence");
+const seqText = document.getElementById("seqText");
+const seqImg = document.getElementById("seqImg");
+const seqGtrWrap = document.getElementById("seqGtrWrap");
+const seqGtr = document.getElementById("seqGtr");
+const photoRing = document.getElementById("photoRing");
+const us1 = document.getElementById("us1");
+const us2 = document.getElementById("us2");
+const us3 = document.getElementById("us3");
+const us4 = document.getElementById("us4");
+
+// Final page
+const finalPage = document.getElementById("finalPage");
+const restartBtn = document.getElementById("restartBtn");
+
+// Final images
+const finalStone = document.getElementById("finalStone");
+const finalKissCat = document.getElementById("finalKissCat");
+const finalFlowerCat = document.getElementById("finalFlowerCat");
+const finalGtr = document.getElementById("finalGtr");
+const finalUs1 = document.getElementById("finalUs1");
+const finalUs2 = document.getElementById("finalUs2");
+const finalUs3 = document.getElementById("finalUs3");
+const finalUs4 = document.getElementById("finalUs4");
+
+// Audio
+const audPop = document.getElementById("audPop");
+const audKiss = document.getElementById("audKiss");
+const audConfetti = document.getElementById("audConfetti");
+const audYuppi = document.getElementById("audYuppi");
+const audSong = document.getElementById("audSong");
+const audEngine = document.getElementById("audEngine");
+
+// ===== State =====
 let noClicks = 0;
 let yesScale = 1;
 let noScale = 1;
 let finished = false;
 
-// Allow audio after first user interaction (PC ok)
+// allow audio after first user gesture
 let userInteracted = false;
 window.addEventListener("pointerdown", () => { userInteracted = true; }, { once: true });
 
@@ -42,18 +64,29 @@ const noFlow = [
   "No is getting… suspiciously small…",
 ];
 
-function safePlay(audioEl, volume = 1) {
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function safePlay(audioEl, volume = 1, loop = false) {
   if (!userInteracted) return;
   if (!audioEl) return;
   try {
-    audioEl.currentTime = 0;
+    audioEl.loop = !!loop;
     audioEl.volume = volume;
+    audioEl.currentTime = 0;
     const p = audioEl.play();
     if (p && typeof p.catch === "function") p.catch(() => {});
-  } catch { /* ignore */ }
+  } catch {}
 }
 
-// --- Intro: timings updated (Hello 2500, others 3500)
+function safeStop(audioEl) {
+  if (!audioEl) return;
+  try {
+    audioEl.pause();
+    audioEl.currentTime = 0;
+  } catch {}
+}
+
+// ===== Intro timings: Hello 2500, others 3500 =====
 async function runIntroOneByOne() {
   const lines = [
     { text: "Hello Wiktoria", holdMs: 2500 },
@@ -63,28 +96,19 @@ async function runIntroOneByOne() {
 
   async function showLine({ text, holdMs }) {
     introSingleLine.textContent = text;
-
-    introSingleLine.classList.remove("hide");
-    introSingleLine.classList.remove("show");
-
+    introSingleLine.classList.remove("hide", "show");
     await sleep(80);
     introSingleLine.classList.add("show");
-
     await sleep(holdMs);
     introSingleLine.classList.add("hide");
-
-    await sleep(900); // fade-out time
+    await sleep(900);
   }
 
-  for (const line of lines) {
-    await showLine(line);
-  }
+  for (const line of lines) await showLine(line);
 
-  // Rose spin-in
   rose.classList.add("flyIn");
   await sleep(1200);
 
-  // Fade out intro, show main card
   intro.classList.add("fadeOut");
   await sleep(750);
 
@@ -92,26 +116,20 @@ async function runIntroOneByOne() {
   card.classList.remove("hidden");
   placeNoButtonInitial();
 }
-
 runIntroOneByOne();
 
-// --- Initial NO placement
+// ===== NO placement + behavior =====
 function placeNoButtonInitial() {
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
-
-  const x = rect.width * 0.63;
-  const y = rect.height * 0.20;
-
-  noBtn.style.left = `${x}px`;
-  noBtn.style.top = `${y}px`;
+  noBtn.style.left = `${rect.width * 0.63}px`;
+  noBtn.style.top = `${rect.height * 0.20}px`;
 }
 
 window.addEventListener("resize", () => {
   if (!card.classList.contains("hidden")) placeNoButtonInitial();
 });
 
-// --- NO slides away from cursor (stays visible, no teleport)
 function slideNoButtonAway(ev) {
   if (finished) return;
 
@@ -140,8 +158,7 @@ function slideNoButtonAway(ev) {
   }
 
   const len = Math.hypot(dx, dy) || 1;
-  dx /= len;
-  dy /= len;
+  dx /= len; dy /= len;
 
   const base = 140;
   const extra = Math.min(70, noClicks * 8);
@@ -168,7 +185,6 @@ function slideNoButtonAway(ev) {
 noBtn.addEventListener("mousemove", slideNoButtonAway);
 noBtn.addEventListener("mouseover", slideNoButtonAway);
 
-// --- NO clicked: confirm/error flow + scaling
 noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (finished) return;
@@ -176,8 +192,7 @@ noBtn.addEventListener("click", (e) => {
   noClicks++;
   safePlay(audPop, 0.35);
 
-  const msg = noFlow[Math.min(noFlow.length - 1, noClicks - 1)];
-  toast.textContent = msg;
+  toast.textContent = noFlow[Math.min(noFlow.length - 1, noClicks - 1)];
 
   noScale = Math.max(0, 1 - noClicks * 0.12);
   yesScale = Math.min(2.2, 1 + noClicks * 0.10);
@@ -196,79 +211,11 @@ noBtn.addEventListener("click", (e) => {
 function applyButtonScales() {
   yesBtn.style.transform = `scale(${yesScale})`;
   yesBtn.style.fontSize = `${Math.round(16 * yesScale)}px`;
-
   noBtn.style.transform = `scale(${noScale})`;
   noBtn.style.fontSize = `${Math.round(16 * Math.max(0.8, noScale))}px`;
 }
 
-// --- YES clicked: HUGE confetti from BOTH SIDES
-yesBtn.addEventListener("click", async () => {
-  if (finished) return;
-  finished = true;
-
-  safePlay(audConfetti, 0.45);
-  toast.textContent = "YUPPII!! 💖🎉";
-
-  yesBtn.disabled = true;
-  noBtn.disabled = true;
-  noBtn.style.pointerEvents = "none";
-
-  // Massive side cannons
-  startConfettiSides(520);
-
-  setTimeout(() => {
-    card.classList.add("hidden");
-    gifts.classList.remove("hidden");
-    revealGiftSequence();
-  }, 650);
-});
-
-againBtn.addEventListener("click", () => {
-  finished = false;
-  noClicks = 0;
-  yesScale = 1;
-  noScale = 1;
-  applyButtonScales();
-
-  toast.textContent = "";
-  yesBtn.disabled = false;
-  noBtn.disabled = false;
-  noBtn.style.opacity = "1";
-  noBtn.style.pointerEvents = "auto";
-
-  gifts.classList.add("hidden");
-  card.classList.remove("hidden");
-
-  [stoneImg, kissImg, spinImg].forEach(img => {
-    img.classList.add("hidden");
-    img.src = "";
-  });
-
-  placeNoButtonInitial();
-});
-
-// --- Gift sequence (swap in assets later)
-function setOptionalImage(imgEl, path) {
-  imgEl.onload = () => imgEl.classList.remove("hidden");
-  imgEl.onerror = () => { /* keep fallback */ };
-  imgEl.src = path;
-}
-
-async function revealGiftSequence() {
-  setOptionalImage(stoneImg, "assets/love-stone.png");
-  await sleep(650);
-
-  setOptionalImage(kissImg, "assets/cat-kiss.gif");
-  safePlay(audKiss, 0.55);
-  await sleep(850);
-
-  setOptionalImage(spinImg, "assets/cat-spin.gif");
-}
-
-// --- Helpers
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ===== Confetti =====
+// ===== Confetti engine =====
 const ctx = confettiCanvas.getContext("2d");
 let particles = [];
 let rafId = null;
@@ -284,47 +231,33 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-// Side cannons
-function startConfettiSides(perSide = 400) {
-  spawnConfettiBurst({
-    count: perSide,
-    originX: 0.06,
-    originY: 0.55,
-    vxBias: +6.5
-  });
-  spawnConfettiBurst({
-    count: perSide,
-    originX: 0.94,
-    originY: 0.55,
-    vxBias: -6.5
-  });
-}
-
 function spawnConfettiBurst({ count, originX, originY, vxBias }) {
   const w = window.innerWidth;
   const h = window.innerHeight;
-
   const ox = w * originX;
   const oy = h * originY;
 
   for (let i = 0; i < count; i++) {
-    const spreadX = 50;
-    const spreadY = 220;
-
+    const spreadX = 60;
+    const spreadY = 260;
     particles.push({
       x: ox + (Math.random() - 0.5) * spreadX,
       y: oy + (Math.random() - 0.5) * spreadY,
-      vx: vxBias + (Math.random() - 0.5) * 7,
-      vy: (Math.random() - 0.5) * 6,
+      vx: vxBias + (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 7,
       size: Math.random() * 7 + 3,
       rot: Math.random() * Math.PI * 2,
       vr: (Math.random() - 0.5) * 0.35,
-      life: Math.random() * 90 + 120,
+      life: Math.random() * 90 + 140,
       shape: Math.random() < 0.55 ? "rect" : "circle",
     });
   }
-
   if (!rafId) loop();
+}
+
+function startConfettiSides(perSide = 520) {
+  spawnConfettiBurst({ count: perSide, originX: 0.06, originY: 0.55, vxBias: +7.0 });
+  spawnConfettiBurst({ count: perSide, originX: 0.94, originY: 0.55, vxBias: -7.0 });
 }
 
 function loop() {
@@ -336,30 +269,20 @@ function loop() {
     p.life -= 1;
     p.x += p.vx;
     p.y += p.vy;
-
-    // light gravity
     p.vy += 0.06;
-
-    // slight air resistance
     p.vx *= 0.995;
     p.vy *= 0.995;
-
     p.rot += p.vr;
 
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(p.rot);
-    ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 180));
-
+    ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 200));
     ctx.fillStyle = `hsla(${Math.floor(Math.random() * 360)}, 90%, 65%, 1)`;
 
-    if (p.shape === "rect") {
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.75);
-    } else {
-      ctx.beginPath();
-      ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    if (p.shape === "rect") ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.75);
+    else { ctx.beginPath(); ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2); ctx.fill(); }
+
     ctx.restore();
   }
 
@@ -368,3 +291,171 @@ function loop() {
     rafId = null;
   }
 }
+
+// ===== Asset helpers =====
+function setImg(imgEl, path) {
+  if (!imgEl) return;
+  imgEl.classList.remove("hidden");
+  imgEl.onload = () => {};
+  imgEl.onerror = () => { imgEl.classList.add("hidden"); };
+  imgEl.src = path;
+}
+
+function showSeqText(text, { big = true } = {}) {
+  seqText.textContent = text;
+  seqText.classList.remove("hidden", "seqFadeOut", "small");
+  if (!big) seqText.classList.add("small");
+}
+
+function hideSeqTextFade() {
+  seqText.classList.add("seqFadeOut");
+}
+
+function hideAllSeqVisuals() {
+  seqText.classList.add("hidden");
+  seqImg.classList.add("hidden");
+  seqGtrWrap.classList.add("hidden");
+  photoRing.classList.add("hidden");
+  seqImg.removeAttribute("src");
+  seqGtr.removeAttribute("src");
+  seqText.classList.remove("seqFadeOut", "small");
+  seqGtr.classList.remove("shake", "driveOff");
+}
+
+// ===== YES CLICK → full sequence =====
+yesBtn.addEventListener("click", async () => {
+  if (finished) return;
+  finished = true;
+
+  // Hide the card but keep background
+  card.classList.add("hidden");
+
+  // Show sequence overlay
+  sequence.classList.remove("hidden");
+  hideAllSeqVisuals();
+
+  // Sounds: pop + yuppi + start song
+  safePlay(audPop, 0.65);
+  safePlay(audYuppi, 0.75);
+  safePlay(audSong, 0.25, true);
+
+  // Confetti both sides (huge)
+  startConfettiSides(650);
+
+  // YUPPII big in center (no fade-in)
+  showSeqText("YUPPII!! 💖🎉", { big: true });
+  await sleep(1700);
+  hideSeqTextFade();
+  await sleep(800);
+
+  // Cat kissing camera + kiss sound
+  hideAllSeqVisuals();
+  setImg(seqImg, "assets/cat-kiss.gif");
+  safePlay(audKiss, 0.60);
+  await sleep(2200);
+
+  // "Here are your gifts..."
+  hideAllSeqVisuals();
+  showSeqText("Here are your gifts…", { big: false });
+  await sleep(1700);
+  hideSeqTextFade();
+  await sleep(700);
+
+  // Gift 1: LOVE stone
+  hideAllSeqVisuals();
+  setImg(seqImg, "assets/love-stone.png");
+  await sleep(1800);
+
+  // Gift 2: Cat with flowers
+  hideAllSeqVisuals();
+  setImg(seqImg, "assets/cat-flowers.gif"); // add this asset
+  await sleep(2000);
+
+  // Gift 3: Nissan GTR (shake + exhaust pops) then drives off
+  hideAllSeqVisuals();
+  seqGtrWrap.classList.remove("hidden");
+  setImg(seqGtr, "assets/gtr.png"); // add this asset
+
+  // Engine/exhaust sound
+  safePlay(audEngine, 0.65);
+
+  // Shake for a bit
+  await sleep(250);
+  seqGtr.classList.add("shake");
+  await sleep(1500);
+
+  // Drive off
+  seqGtr.classList.remove("shake");
+  seqGtr.classList.add("driveOff");
+  await sleep(1300);
+
+  // Stop engine sound after it drives off
+  safeStop(audEngine);
+
+  // Clear everything
+  hideAllSeqVisuals();
+  await sleep(250);
+
+  // Serious cute message + your photos around it
+  showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
+
+  // Load your photos (replace these filenames)
+  photoRing.classList.remove("hidden");
+  setImg(us1, "assets/us-1.jpg");
+  setImg(us2, "assets/us-2.jpg");
+  setImg(us3, "assets/us-3.jpg");
+  setImg(us4, "assets/us-4.jpg");
+
+  await sleep(3500);
+  hideSeqTextFade();
+  await sleep(900);
+
+  // Transition to final page (scrollable)
+  sequence.classList.add("hidden");
+  finalPage.classList.remove("hidden");
+
+  // Fill final page images
+  setImg(finalStone, "assets/love-stone.png");
+  setImg(finalKissCat, "assets/cat-kiss.gif");
+  setImg(finalFlowerCat, "assets/cat-flowers.gif");
+  setImg(finalGtr, "assets/gtr.png");
+
+  setImg(finalUs1, "assets/us-1.jpg");
+  setImg(finalUs2, "assets/us-2.jpg");
+  setImg(finalUs3, "assets/us-3.jpg");
+  setImg(finalUs4, "assets/us-4.jpg");
+});
+
+// Restart: back to intro
+restartBtn.addEventListener("click", () => {
+  // stop audio
+  safeStop(audSong);
+  safeStop(audEngine);
+
+  // reset
+  finished = false;
+  noClicks = 0;
+  yesScale = 1;
+  noScale = 1;
+  applyButtonScales();
+
+  // restore buttons
+  noBtn.style.opacity = "1";
+  noBtn.style.pointerEvents = "auto";
+  toast.textContent = "";
+
+  // hide final
+  finalPage.classList.add("hidden");
+
+  // bring back intro
+  intro.style.display = "";
+  intro.classList.remove("fadeOut");
+  rose.classList.remove("flyIn");
+  introSingleLine.classList.remove("show", "hide");
+
+  // ensure card hidden until intro ends
+  card.classList.add("hidden");
+
+  // rerun intro
+  runIntroOneByOne();
+});
