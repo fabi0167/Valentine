@@ -53,32 +53,29 @@ function safePlay(audioEl, volume = 1) {
   } catch { /* ignore */ }
 }
 
-// --- Intro: white bg, black text, one at a time
+// --- Intro: white bg, black text, one at a time (with different read times)
 async function runIntroOneByOne() {
   const lines = [
-    "Hello Wiktoria",
-    "A little birdie told me no one has asked you to be a Valentine yet.",
-    "Well, don’t you worry, beautiful — your Romeo has come."
+    { text: "Hello Wiktoria", holdMs: 1400 }, // shorter
+    { text: "A little birdie told me no one has asked you to be a Valentine yet.", holdMs: 3200 }, // longer
+    { text: "Well, don’t you worry, beautiful — your Romeo has come.", holdMs: 3200 }, // longer
   ];
 
-  // Helper to show a line: fade in -> hold -> fade out
-  async function showLine(text) {
+  async function showLine({ text, holdMs }) {
     introSingleLine.textContent = text;
 
-    // reset classes
     introSingleLine.classList.remove("hide");
     introSingleLine.classList.remove("show");
 
     await sleep(80);
     introSingleLine.classList.add("show");
 
-    await sleep(3500); // how long it stays visible
+    await sleep(holdMs);
     introSingleLine.classList.add("hide");
 
     await sleep(900); // fade-out time
   }
 
-  // Run each line
   for (const line of lines) {
     await showLine(line);
   }
@@ -114,42 +111,72 @@ window.addEventListener("resize", () => {
   if (!card.classList.contains("hidden")) placeNoButtonInitial();
 });
 
-// --- Make NO run away (PC hover)
-function moveNoButtonAway(fromEvent) {
+// --- NO slides away from cursor (stays visible, no teleport)
+function slideNoButtonAway(ev) {
   if (finished) return;
 
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
+
   const pad = 10;
-
-  const chaos = Math.min(1.6, 1 + noClicks * 0.08);
-
   const maxX = rect.width - noBtn.offsetWidth - pad;
   const maxY = rect.height - noBtn.offsetHeight - pad;
 
-  let newX = Math.random() * maxX;
-  let newY = Math.random() * maxY;
+  // Current NO position (relative to buttons area)
+  const currentLeft = parseFloat(noBtn.style.left || "0");
+  const currentTop  = parseFloat(noBtn.style.top  || "0");
 
-  const e = fromEvent;
-  if (e && typeof e.clientX === "number") {
-    const localX = e.clientX - rect.left;
-    const localY = e.clientY - rect.top;
+  // Pointer position (relative)
+  const px = ev.clientX - rect.left;
+  const py = ev.clientY - rect.top;
 
-    newX = (localX < rect.width / 2) ? (rect.width * 0.62) : (rect.width * 0.18);
-    newY = (localY < rect.height / 2) ? (rect.height * 0.58) : (rect.height * 0.18);
+  // Button center
+  const bx = currentLeft + noBtn.offsetWidth / 2;
+  const by = currentTop  + noBtn.offsetHeight / 2;
 
-    newX += (Math.random() - 0.5) * 140 * chaos;
-    newY += (Math.random() - 0.5) * 90  * chaos;
+  // Vector from pointer -> button
+  let dx = bx - px;
+  let dy = by - py;
 
-    newX = Math.max(pad, Math.min(maxX, newX));
-    newY = Math.max(pad, Math.min(maxY, newY));
+  // If pointer is exactly on center, pick a random direction
+  if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) {
+    dx = Math.random() - 0.5;
+    dy = Math.random() - 0.5;
   }
 
-  noBtn.style.left = `${newX}px`;
-  noBtn.style.top  = `${newY}px`;
+  // Normalize direction
+  const len = Math.hypot(dx, dy) || 1;
+  dx /= len;
+  dy /= len;
+
+  // Distance to slide away
+  const base = 140;
+  const extra = Math.min(70, noClicks * 8); // slightly more “panic” after clicks
+  const dist = base + extra;
+
+  let newLeft = currentLeft + dx * dist;
+  let newTop  = currentTop  + dy * dist;
+
+  // Clamp within bounds
+  newLeft = Math.max(pad, Math.min(maxX, newLeft));
+  newTop  = Math.max(pad, Math.min(maxY, newTop));
+
+  // If clamped so hard it barely moved, try a sideways dodge
+  const moved = Math.hypot(newLeft - currentLeft, newTop - currentTop);
+  if (moved < 40) {
+    // rotate direction 90 degrees
+    const sx = -dy;
+    const sy = dx;
+    newLeft = Math.max(pad, Math.min(maxX, currentLeft + sx * dist));
+    newTop  = Math.max(pad, Math.min(maxY, currentTop  + sy * dist));
+  }
+
+  noBtn.style.left = `${newLeft}px`;
+  noBtn.style.top  = `${newTop}px`;
 }
 
-noBtn.addEventListener("mouseover", moveNoButtonAway);
+noBtn.addEventListener("mousemove", slideNoButtonAway);
+noBtn.addEventListener("mouseover", slideNoButtonAway);
 
 // --- NO clicked: confirm/error flow + scaling
 noBtn.addEventListener("click", (e) => {
@@ -172,7 +199,8 @@ noBtn.addEventListener("click", (e) => {
     noBtn.style.pointerEvents = "none";
     toast.textContent = "NO has left the chat. 🙂";
   } else {
-    moveNoButtonAway(e);
+    // After clicking no, also slide away a bit so it stays annoying
+    slideNoButtonAway(e);
   }
 });
 

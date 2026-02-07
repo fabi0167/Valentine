@@ -61,12 +61,11 @@ body {
 }
 
 h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
-p { margin: 10px 0 0; color: var(--muted); }
 
 /* Roomier buttons area */
 .buttons {
-  margin-top: 24px;
-  min-height: 170px;
+  margin-top: 26px;
+  min-height: 190px;
   position: relative;
   display: grid;
   place-items: center;
@@ -96,8 +95,11 @@ p { margin: 10px 0 0; color: var(--muted); }
   position: absolute;
   background: rgba(255,255,255,0.13);
   color: rgba(255,255,255,0.92);
-  border: 1px solid rgba(255,255,255,0.92);
+  border: 1px solid rgba(255,255,255,0.22);
   box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+
+  /* Smooth sliding instead of teleporting */
+  transition: left 220ms ease, top 220ms ease, transform .18s ease, font-size .18s ease, opacity .2s ease;
 }
 
 .again {
@@ -106,25 +108,8 @@ p { margin: 10px 0 0; color: var(--muted); }
   border: 1px solid rgba(255,255,255,0.18);
 }
 
-.hint {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.dot {
-  width: 10px; height: 10px;
-  border-radius: 99px;
-  background: rgba(255, 63, 129, 0.9);
-  box-shadow: 0 0 0 6px rgba(255, 63, 129, 0.14);
-}
-
 .toast {
-  margin-top: 14px;
+  margin-top: 16px;
   text-align: center;
   min-height: 22px;
   color: rgba(255,255,255,0.88);
