@@ -159,8 +159,8 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 }
 
 .roseImg{
-  width: 220px;
-  height: 220px;
+  width: 750px;
+  height: 750px;
   object-fit: contain;
   display: block;
   margin: 24px auto 0;
