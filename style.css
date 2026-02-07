@@ -106,6 +106,9 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   background: rgba(255,255,255,0.12);
   color: rgba(255,255,255,0.92);
   border: 1px solid rgba(255,255,255,0.18);
+
+  /* More space above replay button */
+  margin-top: 26px;
 }
 
 .toast {
@@ -162,8 +165,6 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   font-size: 38px;
   opacity: 0.92;
 }
-
-.giftNote { color: var(--muted); }
 
 .giftImg {
   max-width: 100%;
