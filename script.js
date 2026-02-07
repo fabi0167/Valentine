@@ -7,10 +7,7 @@ const card = document.getElementById("card");
 const gifts = document.getElementById("gifts");
 const againBtn = document.getElementById("againBtn");
 
-const soundGate = document.getElementById("soundGate");
-const enableSoundBtn = document.getElementById("enableSoundBtn");
-const skipSoundBtn = document.getElementById("skipSoundBtn");
-
+// Optional audio
 const audKiss = document.getElementById("audKiss");
 const audPop = document.getElementById("audPop");
 const audConfetti = document.getElementById("audConfetti");
@@ -20,21 +17,21 @@ const stoneImg = document.getElementById("stoneImg");
 const kissImg  = document.getElementById("kissImg");
 const spinImg  = document.getElementById("spinImg");
 
-// Intro elements
+// Intro elements (one-line)
 const intro = document.getElementById("intro");
-const introLine1 = document.getElementById("introLine1");
-const introLine2 = document.getElementById("introLine2");
-const introLine3 = document.getElementById("introLine3");
+const introSingleLine = document.getElementById("introSingleLine");
 const rose = document.getElementById("rose");
 
 // --- State
 let noClicks = 0;
 let yesScale = 1;
 let noScale = 1;
-let soundEnabled = false;
 let finished = false;
 
-// Messages for NO clicks (confirm/error vibe)
+// Allow audio after first user interaction (PC ok)
+let userInteracted = false;
+window.addEventListener("pointerdown", () => { userInteracted = true; }, { once: true });
+
 const noFlow = [
   "Are you sure? 😏",
   "Confirm…",
@@ -46,7 +43,7 @@ const noFlow = [
 ];
 
 function safePlay(audioEl, volume = 1) {
-  if (!soundEnabled) return;
+  if (!userInteracted) return;
   if (!audioEl) return;
   try {
     audioEl.currentTime = 0;
@@ -56,58 +53,56 @@ function safePlay(audioEl, volume = 1) {
   } catch { /* ignore */ }
 }
 
-// --- Sound gate (helps on phones)
-enableSoundBtn.addEventListener("click", () => {
-  soundEnabled = true;
-  // "Unlock" audio by playing silently once
-  safePlay(audPop, 0.001);
-  soundGate.style.display = "none";
-});
-skipSoundBtn.addEventListener("click", () => {
-  soundEnabled = false;
-  soundGate.style.display = "none";
-});
+// --- Intro: white bg, black text, one at a time
+async function runIntroOneByOne() {
+  const lines = [
+    "Hello Wiktoria",
+    "A little birdie told me no one has asked you to be a Valentine yet.",
+    "Well, don’t you worry, beautiful — your Romeo has come."
+  ];
 
-// --- Intro sequence
-async function runIntro() {
-  introLine1.textContent = "Hello Wiktoria";
-  introLine2.textContent = "A little birdie told me no one has asked you to be a Valentine yet.";
-  introLine3.textContent = "Well, don’t you worry, beautiful — your Romeo has come.";
+  // Helper to show a line: fade in -> hold -> fade out
+  async function showLine(text) {
+    introSingleLine.textContent = text;
 
-  introLine2.classList.add("small");
-  introLine3.classList.add("small");
+    // reset classes
+    introSingleLine.classList.remove("hide");
+    introSingleLine.classList.remove("show");
 
-  await sleep(400);
-  introLine1.classList.add("show");
+    await sleep(80);
+    introSingleLine.classList.add("show");
 
-  await sleep(1700);
-  introLine2.classList.add("show");
+    await sleep(2200); // how long it stays visible
+    introSingleLine.classList.add("hide");
 
-  await sleep(1800);
-  introLine3.classList.add("show");
+    await sleep(900); // fade-out time
+  }
 
-  await sleep(1400);
+  // Run each line
+  for (const line of lines) {
+    await showLine(line);
+  }
+
+  // Rose spin-in
   rose.classList.add("flyIn");
+  await sleep(1200);
 
-  await sleep(1300);
+  // Fade out intro, show main card
   intro.classList.add("fadeOut");
+  await sleep(750);
 
-  await sleep(850);
   intro.style.display = "none";
   card.classList.remove("hidden");
-
-  // Place NO button after card shows (ensures correct layout)
   placeNoButtonInitial();
 }
 
-runIntro();
+runIntroOneByOne();
 
 // --- Initial NO placement
 function placeNoButtonInitial() {
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
 
-  // Start roughly to the right side
   const x = rect.width * 0.63;
   const y = rect.height * 0.20;
 
@@ -116,22 +111,17 @@ function placeNoButtonInitial() {
 }
 
 window.addEventListener("resize", () => {
-  if (!card.classList.contains("hidden")) {
-    placeNoButtonInitial();
-  }
+  if (!card.classList.contains("hidden")) placeNoButtonInitial();
 });
 
-// --- Make NO run away (desktop hover + mobile touch/pointer)
+// --- Make NO run away (PC hover)
 function moveNoButtonAway(fromEvent) {
   if (finished) return;
 
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
-
-  // Keep within bounds
   const pad = 10;
 
-  // Bigger jumps as NO gets smaller (feels more chaotic)
   const chaos = Math.min(1.6, 1 + noClicks * 0.08);
 
   const maxX = rect.width - noBtn.offsetWidth - pad;
@@ -140,17 +130,14 @@ function moveNoButtonAway(fromEvent) {
   let newX = Math.random() * maxX;
   let newY = Math.random() * maxY;
 
-  // If we know pointer location, try to move away from it
   const e = fromEvent;
   if (e && typeof e.clientX === "number") {
     const localX = e.clientX - rect.left;
     const localY = e.clientY - rect.top;
 
-    // Move to opposite side-ish
     newX = (localX < rect.width / 2) ? (rect.width * 0.62) : (rect.width * 0.18);
     newY = (localY < rect.height / 2) ? (rect.height * 0.58) : (rect.height * 0.18);
 
-    // Add randomness
     newX += (Math.random() - 0.5) * 140 * chaos;
     newY += (Math.random() - 0.5) * 90  * chaos;
 
@@ -163,8 +150,6 @@ function moveNoButtonAway(fromEvent) {
 }
 
 noBtn.addEventListener("mouseover", moveNoButtonAway);
-noBtn.addEventListener("pointerdown", moveNoButtonAway);
-noBtn.addEventListener("touchstart", moveNoButtonAway, { passive: true });
 
 // --- NO clicked: confirm/error flow + scaling
 noBtn.addEventListener("click", (e) => {
@@ -177,19 +162,16 @@ noBtn.addEventListener("click", (e) => {
   const msg = noFlow[Math.min(noFlow.length - 1, noClicks - 1)];
   toast.textContent = msg;
 
-  // Shrink NO, grow YES
   noScale = Math.max(0, 1 - noClicks * 0.12);
   yesScale = Math.min(2.2, 1 + noClicks * 0.10);
 
   applyButtonScales();
 
-  // After enough clicks, NO disappears completely
   if (noScale <= 0.08) {
     noBtn.style.opacity = "0";
     noBtn.style.pointerEvents = "none";
     toast.textContent = "NO has left the chat. 🙂";
   } else {
-    // Also make it run away after click
     moveNoButtonAway(e);
   }
 });
@@ -210,15 +192,12 @@ yesBtn.addEventListener("click", async () => {
   safePlay(audConfetti, 0.45);
   toast.textContent = "YUPPII!! 💖🎉";
 
-  // Lock buttons
   yesBtn.disabled = true;
   noBtn.disabled = true;
   noBtn.style.pointerEvents = "none";
 
-  // Confetti burst
-  startConfettiBurst(160);
+  startConfettiBurst(180);
 
-  // Reveal gifts after a short dramatic pause
   setTimeout(() => {
     card.classList.add("hidden");
     gifts.classList.remove("hidden");
@@ -227,7 +206,6 @@ yesBtn.addEventListener("click", async () => {
 });
 
 againBtn.addEventListener("click", () => {
-  // Reset
   finished = false;
   noClicks = 0;
   yesScale = 1;
@@ -243,7 +221,6 @@ againBtn.addEventListener("click", () => {
   gifts.classList.add("hidden");
   card.classList.remove("hidden");
 
-  // Hide gift imgs (they will re-reveal)
   [stoneImg, kissImg, spinImg].forEach(img => {
     img.classList.add("hidden");
     img.src = "";
@@ -252,7 +229,7 @@ againBtn.addEventListener("click", () => {
   placeNoButtonInitial();
 });
 
-// --- Gift sequence (swap in your assets later)
+// --- Gift sequence (swap in assets later)
 function setOptionalImage(imgEl, path) {
   imgEl.onload = () => imgEl.classList.remove("hidden");
   imgEl.onerror = () => { /* keep fallback */ };
@@ -260,18 +237,15 @@ function setOptionalImage(imgEl, path) {
 }
 
 async function revealGiftSequence() {
-  // 1) LOVE stone
   setOptionalImage(stoneImg, "assets/love-stone.png");
   startConfettiBurst(80);
   await sleep(800);
 
-  // 2) Cat kissing camera (with kiss sound)
   setOptionalImage(kissImg, "assets/cat-kiss.gif");
   safePlay(audKiss, 0.55);
   startConfettiBurst(60);
   await sleep(1000);
 
-  // 3) Spinning cat with bouquet
   setOptionalImage(spinImg, "assets/cat-spin.gif");
   startConfettiBurst(70);
 }
@@ -279,7 +253,7 @@ async function revealGiftSequence() {
 // --- Helpers
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// ===== Confetti (simple canvas particles) =====
+// ===== Confetti =====
 const ctx = confettiCanvas.getContext("2d");
 let particles = [];
 let rafId = null;
@@ -325,7 +299,7 @@ function loop() {
     p.life -= 1;
     p.x += p.vx;
     p.y += p.vy;
-    p.vy += 0.12; // gravity
+    p.vy += 0.12;
     p.rot += p.vr;
 
     ctx.save();
@@ -333,7 +307,6 @@ function loop() {
     ctx.rotate(p.rot);
     ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 120));
 
-    // Random color per particle draw
     ctx.fillStyle = `hsla(${Math.floor(Math.random() * 360)}, 90%, 65%, 1)`;
 
     if (p.shape === "rect") {

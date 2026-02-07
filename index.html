@@ -10,17 +10,15 @@
   <canvas id="confetti"></canvas>
 
   <main class="wrap">
-    <!-- Intro screen -->
-    <section class="intro" id="intro">
-      <div class="introInner">
-        <div class="introLine" id="introLine1"></div>
-        <div class="introLine" id="introLine2"></div>
-        <div class="introLine" id="introLine3"></div>
-
-        <div class="rose" id="rose" aria-hidden="true">🌹</div>
+    <!-- Intro screen (white bg, black text, one line at a time) -->
+    <section class="intro introWhite" id="intro">
+      <div class="introInnerOneLine">
+        <div class="introSingleLine" id="introSingleLine"></div>
+        <div class="rose roseWhite" id="rose" aria-hidden="true">🌹</div>
       </div>
     </section>
 
+    <!-- Main question card -->
     <section class="card hidden" id="card">
       <div class="top">
         <div class="badge">💘</div>
@@ -41,7 +39,7 @@
       <div class="toast" id="toast" aria-live="polite"></div>
     </section>
 
-    <!-- Gifts area appears after YES -->
+    <!-- Gifts -->
     <section class="gifts hidden" id="gifts">
       <h2>🎁 Your gifts</h2>
 
@@ -77,19 +75,7 @@
       <button id="againBtn" class="btn again">Replay ✨</button>
     </section>
 
-    <!-- Sound permission overlay (helps iOS/phones) -->
-    <div class="soundGate" id="soundGate">
-      <div class="soundGateCard">
-        <div class="soundGateTitle">Enable sound? 🔊</div>
-        <p class="soundGateText">
-          Phones block autoplay. Tap once to enable cute sound effects ❤️
-        </p>
-        <button class="btn yes" id="enableSoundBtn">Enable sound</button>
-        <button class="btn no" id="skipSoundBtn">Skip</button>
-      </div>
-    </div>
-
-    <!-- Preload audio (optional) -->
+    <!-- Optional audio -->
     <audio id="audKiss" preload="auto" src="assets/kiss.mp3"></audio>
     <audio id="audPop" preload="auto" src="assets/pop.mp3"></audio>
     <audio id="audConfetti" preload="auto" src="assets/confetti.mp3"></audio>
