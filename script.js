@@ -56,7 +56,7 @@ function safePlay(audioEl, volume = 1) {
 // --- Intro: white bg, black text, one at a time (with different read times)
 async function runIntroOneByOne() {
   const lines = [
-    { text: "Hello Wiktoria", holdMs: 1400 }, // shorter
+    { text: "Hello Wiktoria", holdMs: 2500 }, // shorter
     { text: "A little birdie told me no one has asked you to be a Valentine yet.", holdMs: 3200 }, // longer
     { text: "Well, don’t you worry, beautiful — your Romeo has come.", holdMs: 3200 }, // longer
   ];
