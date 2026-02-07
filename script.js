@@ -20,6 +20,13 @@ const stoneImg = document.getElementById("stoneImg");
 const kissImg  = document.getElementById("kissImg");
 const spinImg  = document.getElementById("spinImg");
 
+// Intro elements
+const intro = document.getElementById("intro");
+const introLine1 = document.getElementById("introLine1");
+const introLine2 = document.getElementById("introLine2");
+const introLine3 = document.getElementById("introLine3");
+const rose = document.getElementById("rose");
+
 // --- State
 let noClicks = 0;
 let yesScale = 1;
@@ -27,7 +34,7 @@ let noScale = 1;
 let soundEnabled = false;
 let finished = false;
 
-// Messages for NO clicks (your confirm/error vibe)
+// Messages for NO clicks (confirm/error vibe)
 const noFlow = [
   "Are you sure? 😏",
   "Confirm…",
@@ -61,6 +68,40 @@ skipSoundBtn.addEventListener("click", () => {
   soundGate.style.display = "none";
 });
 
+// --- Intro sequence
+async function runIntro() {
+  introLine1.textContent = "Hello Wiktoria";
+  introLine2.textContent = "A little birdie told me no one has asked you to be a Valentine yet.";
+  introLine3.textContent = "Well, don’t you worry, beautiful — your Romeo has come.";
+
+  introLine2.classList.add("small");
+  introLine3.classList.add("small");
+
+  await sleep(400);
+  introLine1.classList.add("show");
+
+  await sleep(1700);
+  introLine2.classList.add("show");
+
+  await sleep(1800);
+  introLine3.classList.add("show");
+
+  await sleep(1400);
+  rose.classList.add("flyIn");
+
+  await sleep(1300);
+  intro.classList.add("fadeOut");
+
+  await sleep(850);
+  intro.style.display = "none";
+  card.classList.remove("hidden");
+
+  // Place NO button after card shows (ensures correct layout)
+  placeNoButtonInitial();
+}
+
+runIntro();
+
 // --- Initial NO placement
 function placeNoButtonInitial() {
   const area = document.getElementById("buttons");
@@ -73,8 +114,12 @@ function placeNoButtonInitial() {
   noBtn.style.left = `${x}px`;
   noBtn.style.top = `${y}px`;
 }
-placeNoButtonInitial();
-window.addEventListener("resize", placeNoButtonInitial);
+
+window.addEventListener("resize", () => {
+  if (!card.classList.contains("hidden")) {
+    placeNoButtonInitial();
+  }
+});
 
 // --- Make NO run away (desktop hover + mobile touch/pointer)
 function moveNoButtonAway(fromEvent) {
@@ -182,7 +227,7 @@ yesBtn.addEventListener("click", async () => {
 });
 
 againBtn.addEventListener("click", () => {
-  // Simple reset
+  // Reset
   finished = false;
   noClicks = 0;
   yesScale = 1;
@@ -209,7 +254,6 @@ againBtn.addEventListener("click", () => {
 
 // --- Gift sequence (swap in your assets later)
 function setOptionalImage(imgEl, path) {
-  // If asset exists in repo, it loads. If not, we just keep fallback emoji.
   imgEl.onload = () => imgEl.classList.remove("hidden");
   imgEl.onerror = () => { /* keep fallback */ };
   imgEl.src = path;
@@ -289,7 +333,7 @@ function loop() {
     ctx.rotate(p.rot);
     ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 120));
 
-    // No fixed colors by request? Here it's random each draw but not specified as fixed palette.
+    // Random color per particle draw
     ctx.fillStyle = `hsla(${Math.floor(Math.random() * 360)}, 90%, 65%, 1)`;
 
     if (p.shape === "rect") {

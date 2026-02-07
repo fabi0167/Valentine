@@ -10,17 +10,26 @@
   <canvas id="confetti"></canvas>
 
   <main class="wrap">
-    <section class="card" id="card">
+    <!-- Intro screen -->
+    <section class="intro" id="intro">
+      <div class="introInner">
+        <div class="introLine" id="introLine1"></div>
+        <div class="introLine" id="introLine2"></div>
+        <div class="introLine" id="introLine3"></div>
+
+        <div class="rose" id="rose" aria-hidden="true">🌹</div>
+      </div>
+    </section>
+
+    <section class="card hidden" id="card">
       <div class="top">
         <div class="badge">💘</div>
         <h1 id="title">Will you be my Valentine?</h1>
-        <p id="subtitle">I have a very important question…</p>
+        <p id="subtitle">Choose wisely… 😈</p>
       </div>
 
       <div class="buttons" id="buttons">
         <button id="yesBtn" class="btn yes">YES 💖</button>
-
-        <!-- NO is positioned absolutely, so it can run away -->
         <button id="noBtn" class="btn no">NO 🙃</button>
       </div>
 
