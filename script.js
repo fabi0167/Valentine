@@ -44,6 +44,10 @@ const audYuppi = document.getElementById("audYuppi");
 const audSong = document.getElementById("audSong");
 const audEngine = document.getElementById("audEngine");
 
+// NEW: guitar note for rose entrance
+const audGuitar = new Audio("assets/guitar-note.mp3");
+audGuitar.preload = "auto";
+
 // ===== State =====
 let noClicks = 0;
 let yesScale = 1;
@@ -78,6 +82,18 @@ function safePlay(audioEl, volume = 1, loop = false) {
   } catch {}
 }
 
+function safePlayLoose(audioEl, volume = 1) {
+  // for Audio() objects too
+  if (!userInteracted) return;
+  if (!audioEl) return;
+  try {
+    audioEl.volume = volume;
+    audioEl.currentTime = 0;
+    const p = audioEl.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  } catch {}
+}
+
 function safeStop(audioEl) {
   if (!audioEl) return;
   try {
@@ -86,7 +102,7 @@ function safeStop(audioEl) {
   } catch {}
 }
 
-// ===== Intro timings: Hello 2500, others 3500 =====
+// ===== Intro timings =====
 async function runIntroOneByOne() {
   const lines = [
     { text: "Hello Wiktoria", holdMs: 2500 },
@@ -106,7 +122,10 @@ async function runIntroOneByOne() {
 
   for (const line of lines) await showLine(line);
 
+  // Rose entrance + guitar note
   rose.classList.add("flyIn");
+  safePlayLoose(audGuitar, 0.75);
+
   await sleep(1200);
 
   intro.classList.add("fadeOut");
@@ -296,7 +315,6 @@ function loop() {
 function setImg(imgEl, path) {
   if (!imgEl) return;
   imgEl.classList.remove("hidden");
-  imgEl.onload = () => {};
   imgEl.onerror = () => { imgEl.classList.add("hidden"); };
   imgEl.src = path;
 }
@@ -322,84 +340,66 @@ function hideAllSeqVisuals() {
   seqGtr.classList.remove("shake", "driveOff");
 }
 
-// ===== YES CLICK → full sequence =====
+// ===== YES CLICK → sequence =====
 yesBtn.addEventListener("click", async () => {
   if (finished) return;
   finished = true;
 
-  // Hide the card but keep background
   card.classList.add("hidden");
-
-  // Show sequence overlay
   sequence.classList.remove("hidden");
   hideAllSeqVisuals();
 
-  // Sounds: pop + yuppi + start song
   safePlay(audPop, 0.65);
   safePlay(audYuppi, 0.75);
   safePlay(audSong, 0.25, true);
 
-  // Confetti both sides (huge)
   startConfettiSides(650);
 
-  // YUPPII big in center (no fade-in)
   showSeqText("YUPPII!! 💖🎉", { big: true });
   await sleep(1700);
   hideSeqTextFade();
   await sleep(800);
 
-  // Cat kissing camera + kiss sound
   hideAllSeqVisuals();
   setImg(seqImg, "assets/cat-kiss.gif");
   safePlay(audKiss, 0.60);
   await sleep(2200);
 
-  // "Here are your gifts..."
   hideAllSeqVisuals();
   showSeqText("Here are your gifts…", { big: false });
   await sleep(1700);
   hideSeqTextFade();
   await sleep(700);
 
-  // Gift 1: LOVE stone
   hideAllSeqVisuals();
   setImg(seqImg, "assets/love-stone.png");
   await sleep(1800);
 
-  // Gift 2: Cat with flowers
   hideAllSeqVisuals();
-  setImg(seqImg, "assets/cat-flowers.gif"); // add this asset
+  setImg(seqImg, "assets/cat-flowers.gif");
   await sleep(2000);
 
-  // Gift 3: Nissan GTR (shake + exhaust pops) then drives off
   hideAllSeqVisuals();
   seqGtrWrap.classList.remove("hidden");
-  setImg(seqGtr, "assets/gtr.png"); // add this asset
+  setImg(seqGtr, "assets/gtr.png");
 
-  // Engine/exhaust sound
   safePlay(audEngine, 0.65);
 
-  // Shake for a bit
   await sleep(250);
   seqGtr.classList.add("shake");
   await sleep(1500);
 
-  // Drive off
   seqGtr.classList.remove("shake");
   seqGtr.classList.add("driveOff");
   await sleep(1300);
 
-  // Stop engine sound after it drives off
   safeStop(audEngine);
 
-  // Clear everything
   hideAllSeqVisuals();
   await sleep(250);
 
-  // Serious cute message + your photos around it
   showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
 
-  // Load your photos (replace these filenames)
   photoRing.classList.remove("hidden");
   setImg(us1, "assets/us-1.jpg");
   setImg(us2, "assets/us-2.jpg");
@@ -410,11 +410,9 @@ yesBtn.addEventListener("click", async () => {
   hideSeqTextFade();
   await sleep(900);
 
-  // Transition to final page (scrollable)
   sequence.classList.add("hidden");
   finalPage.classList.remove("hidden");
 
-  // Fill final page images
   setImg(finalStone, "assets/love-stone.png");
   setImg(finalKissCat, "assets/cat-kiss.gif");
   setImg(finalFlowerCat, "assets/cat-flowers.gif");
@@ -426,36 +424,27 @@ yesBtn.addEventListener("click", async () => {
   setImg(finalUs4, "assets/us-4.jpg");
 });
 
-// Restart: back to intro
 restartBtn.addEventListener("click", () => {
-  // stop audio
   safeStop(audSong);
   safeStop(audEngine);
 
-  // reset
   finished = false;
   noClicks = 0;
   yesScale = 1;
   noScale = 1;
   applyButtonScales();
 
-  // restore buttons
   noBtn.style.opacity = "1";
   noBtn.style.pointerEvents = "auto";
   toast.textContent = "";
 
-  // hide final
   finalPage.classList.add("hidden");
 
-  // bring back intro
   intro.style.display = "";
   intro.classList.remove("fadeOut");
   rose.classList.remove("flyIn");
   introSingleLine.classList.remove("show", "hide");
 
-  // ensure card hidden until intro ends
   card.classList.add("hidden");
-
-  // rerun intro
   runIntroOneByOne();
 });
