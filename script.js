@@ -20,6 +20,7 @@ const seqImg = document.getElementById("seqImg");
 const seqVid = document.getElementById("seqVid");
 const seqGtrWrap = document.getElementById("seqGtrWrap");
 const seqGtr = document.getElementById("seqGtr");
+const seqFade = document.getElementById("seqFade");
 const photoRing = document.getElementById("photoRing");
 const us1 = document.getElementById("us1");
 const us2 = document.getElementById("us2");
@@ -185,20 +186,41 @@ async function playSeqVideo(path, { maxMs = 6000 } = {}) {
 }
 
 
-async function fadeOutAudio(audioEl, durationMs = 1000) {
+async function fadeOutAudio(audioEl, durationMs = 1200) {
   if (!audioEl) return;
-
-  const steps = 20;
+  const steps = 24;
   const stepTime = durationMs / steps;
-  const startVol = audioEl.volume;
+  const startVol = audioEl.volume ?? 1;
 
   for (let i = steps; i >= 0; i--) {
     audioEl.volume = startVol * (i / steps);
     await sleep(stepTime);
   }
-
   safeStop(audioEl);
+  audioEl.volume = startVol; // reset for next time
 }
+
+async function fadeInAudio(audioEl, targetVol = 0.35, durationMs = 900, loop = true) {
+  if (!audioEl || !userInteracted) return;
+  audioEl.volume = 0;
+  safePlay(audioEl, 0, loop);
+  const steps = 20;
+  const stepTime = durationMs / steps;
+
+  for (let i = 1; i <= steps; i++) {
+    audioEl.volume = targetVol * (i / steps);
+    await sleep(stepTime);
+  }
+}
+
+async function fadeBetween(ms = 650) {
+  if (!seqFade) return;
+  seqFade.classList.add("on");
+  await sleep(ms);
+  seqFade.classList.remove("on");
+  await sleep(ms);
+}
+
 
 
 async function showImageSmooth(path, holdMs, audioEl = null, volume = 0.7) {
@@ -383,7 +405,7 @@ noBtn.addEventListener("click", (e) => {
   if (finished) return;
 
   noClicks++;
-  safePlay(audPop, 0.35);
+  
 
   toast.textContent = noFlow[Math.min(noFlow.length - 1, noClicks - 1)];
 
@@ -560,11 +582,11 @@ yesBtn.addEventListener("click", async () => {
   await sleep(700);
 
   hideAllSeqVisuals();
-  await showImageSmooth("assets/love-stone.png", 5200, audStoneGift, 0.8);
+  await showImageSmooth("assets/love-stone.png", 8000, audStoneGift, 0.8);
 
 
   hideAllSeqVisuals();
-  await showImageSmooth("assets/cat-flowers.gif", 5200, audFlowersGift, 0.7);
+  await showImageSmooth("assets/cat-flowers.gif", 8000, audFlowersGift, 0.7);
 
 
   hideAllSeqVisuals();
@@ -582,12 +604,12 @@ yesBtn.addEventListener("click", async () => {
   await sleep(1300);
 
   safeStop(audEngine);
-
   hideAllSeqVisuals();
   await sleep(250);
+  await fadeBetween(550);
 
-  showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
-  safePlay(audThankYou, 0.8, false);
+  //showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
+  safePlay(audThankYou, 0.2, false);
 
 
   photoRing.classList.remove("hidden");
@@ -596,7 +618,7 @@ yesBtn.addEventListener("click", async () => {
   setImg(us3, "assets/us-3.jpg");
   setImg(us4, "assets/us-4.jpg");
 
-  await sleep(3500);
+  await sleep(12000);
   hideSeqTextFade();
   await sleep(900);
 
