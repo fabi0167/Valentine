@@ -124,6 +124,15 @@ async function runIntroOneByOne() {
 
   // Rose entrance + guitar note
   rose.classList.add("flyIn");
+  setTimeout(() => {
+  if (userInteracted) {
+    audGuitar.currentTime = 0;
+    audGuitar.volume = 0.8;
+    audGuitar.play().catch(() => {});
+    console.log("ROSE SOUND FIRED");
+
+  }
+}, 220);
   setTimeout(() => safePlayLoose(audGuitar, 0.75), 220);
 
   await sleep(1200);
