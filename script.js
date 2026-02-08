@@ -654,6 +654,7 @@ yesBtn.addEventListener("click", async () => {
   seqGtr.classList.remove("shake");
   seqGtr.classList.add("driveOff");
   await sleep(1300);
+  await sleep(2300);
 
   safeStop(audEngine);
   await sleep(2000);
