@@ -578,6 +578,8 @@ function hideAllSeqVisuals() {
     photoRing.classList.add("hidden");
     photoRing.classList.remove("show");
   }
+  if (thankText) thankText.classList.add("hidden");
+
 }
 
 
@@ -645,44 +647,41 @@ yesBtn.addEventListener("click", async () => {
   safeStop(audEngine);
   hideAllSeqVisuals();
 
-  // faster scene cut into thank-you
-  await fadeBetween(320);
+ 
 
 
   // Fade transition into thank-you scene
   await fadeBetween(900);
 
-// start thank-you audio (sooner + louder)
-safePlay(audThankYou, 0.6, false);
+  // start music FIRST (give it a tiny headstart)
+  audThankYou.load?.();
+  safePlay(audThankYou, 0.6, false);
+  await sleep(250);
 
-// show the thank container (but NOT text/photos yet)
-thankWrap.classList.remove("hidden");
-photoRing.classList.remove("hidden");
-photoRing.classList.remove("show");
-if (thankText) thankText.classList.add("hidden");
+  // show container, but keep text/photos hidden
+  thankWrap.classList.remove("hidden");
+  photoRing.classList.remove("hidden");
+  photoRing.classList.remove("show");
+  thankText.classList.add("hidden");
 
-// wait a bit so music leads
-await sleep(900);
+  // delay so the music clearly leads
+  await sleep(900);
 
 // show text
-if (thankText) thankText.classList.remove("hidden");
+thankText.classList.remove("hidden");
 
-// small pause so text lands
+// then photos
 await sleep(700);
 
-// set images (use what you have)
 setImg(us1, "assets/us-1.jpg");
 setImg(us2, "assets/us-2.jpg");
 setImg(us3, "assets/us-3.jpg");
 setImg(us4, "assets/us-4.jpg");
-
-// if you don't have these yet, comment these 4 lines out for now
 setImg(us5, "assets/us-5.jpg");
 setImg(us6, "assets/us-6.jpg");
 setImg(us7, "assets/us-7.jpg");
-setImg(us8, "assets/us-8.png");
+setImg(us8, "assets/us-8.jpg"); // <<< IMPORTANT: match your real file
 
-// trigger ring fade-in
 await sleep(50);
 photoRing.classList.add("show");
 
