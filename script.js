@@ -26,6 +26,7 @@ const seqFade = document.getElementById("seqFade");
 const photoRing = document.getElementById("photoRing");
 const thankWrap = document.getElementById("thankWrap");
 const thankText = document.getElementById("thankText");
+const edgeHearts = document.getElementById("edgeHearts");
 
 
 const us1 = document.getElementById("us1");
@@ -660,6 +661,7 @@ yesBtn.addEventListener("click", async () => {
   hideAllSeqVisuals();
 
 /* HOLD DARK */
+if (edgeHearts) edgeHearts.classList.add("hidden");
 globalFade.classList.add("on");
 await sleep(900);
 
@@ -714,6 +716,7 @@ await sleep(1200); // longer fade to black
 
 sequence.classList.add("hidden");
 finalPage.classList.remove("hidden");
+if (edgeHearts) edgeHearts.classList.remove("hidden");
 
 await sleep(200);  // let layout settle under black
 globalFade.classList.remove("on");
@@ -755,6 +758,7 @@ restartBtn.addEventListener("click", () => {
   setNoInlineAligned();
 
   finalPage.classList.add("hidden");
+  if (edgeHearts) edgeHearts.classList.remove("hidden");
 
   intro.style.display = "";
   intro.classList.remove("fadeOut");
