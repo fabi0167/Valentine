@@ -14,6 +14,7 @@ const rose = document.getElementById("rose");
 const sequence = document.getElementById("sequence");
 const seqText = document.getElementById("seqText");
 const seqImg = document.getElementById("seqImg");
+const seqVid = document.getElementById("seqVid");
 const seqGtrWrap = document.getElementById("seqGtrWrap");
 const seqGtr = document.getElementById("seqGtr");
 const photoRing = document.getElementById("photoRing");
@@ -114,6 +115,60 @@ rose.addEventListener("animationstart", (e) => {
   if (e.animationName !== "roseSpin") return;
   setTimeout(() => safePlayLoose(audGuitar, 0.8), GUITAR_DELAY_MS);
 });
+
+async function playSeqVideo(path, { maxMs = 6000 } = {}) {
+  if (!seqVid) return;
+
+  hideAllSeqVisuals();
+
+  seqVid.classList.remove("hidden");
+  seqVid.src = path;
+
+  // important for autoplay + audio
+  seqVid.muted = false;
+  seqVid.volume = 1.0;
+  seqVid.autoplay = true;
+  seqVid.controls = false;
+
+  // load first
+  try { seqVid.load(); } catch {}
+
+  // play + wait until ended (or timeout)
+  await new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve();
+    };
+
+    const cleanup = () => {
+      seqVid.removeEventListener("ended", finish);
+      seqVid.removeEventListener("error", finish);
+    };
+
+    seqVid.addEventListener("ended", finish);
+    seqVid.addEventListener("error", finish);
+
+    // attempt play
+    const p = seqVid.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        // if autoplay is blocked, resolve anyway so your flow continues
+        finish();
+      });
+    }
+
+    // safety timeout (in case video never fires ended)
+    setTimeout(finish, maxMs);
+  });
+
+  // cleanup after playback
+  try { seqVid.pause(); } catch {}
+  seqVid.classList.add("hidden");
+}
+
 
 // ===== NO positioning helpers =====
 function setNoInlineAligned() {
@@ -385,6 +440,12 @@ function hideAllSeqVisuals() {
   seqImg.classList.add("hidden");
   seqGtrWrap.classList.add("hidden");
   photoRing.classList.add("hidden");
+  if (seqVid) {
+    seqVid.classList.add("hidden");
+    try { seqVid.pause(); } catch {}
+    seqVid.removeAttribute("src");
+    try { seqVid.load(); } catch {}
+  }
   seqImg.removeAttribute("src");
   seqGtr.removeAttribute("src");
   seqText.classList.remove("seqFadeOut", "small");
@@ -414,9 +475,10 @@ yesBtn.addEventListener("click", async () => {
   await sleep(800);
 
   hideAllSeqVisuals();
-  setImg(seqImg, "assets/cat-kiss.gif");
-  safePlay(audKiss, 0.60);
-  await sleep(2200);
+  safeStop(audSong);
+
+  // play cat kiss video (with its own audio)
+  await playSeqVideo("assets/cat-kiss.mp4", { maxMs: 9000 });
 
   hideAllSeqVisuals();
   showSeqText("Here are your gifts…", { big: false });
