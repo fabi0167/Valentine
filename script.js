@@ -26,6 +26,7 @@ const seqFade = document.getElementById("seqFade");
 const photoRing = document.getElementById("photoRing");
 const thankWrap = document.getElementById("thankWrap");
 const thankText = document.getElementById("thankText");
+const edgeHearts = document.getElementById("edgeHearts");
 
 
 const us1 = document.getElementById("us1");
@@ -497,6 +498,10 @@ function spawnConfettiBurst({ count, originX, originY, vxBias }) {
 function startConfettiSides(perSide = 650) {
   spawnConfettiBurst({ count: perSide, originX: 0.06, originY: 0.55, vxBias: +7.0 });
   spawnConfettiBurst({ count: perSide, originX: 0.94, originY: 0.55, vxBias: -7.0 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.08, originY: 0.2, vxBias: +5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.92, originY: 0.2, vxBias: -5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.08, originY: 0.85, vxBias: +5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.92, originY: 0.85, vxBias: -5.5 });
 }
 
 function loop() {
@@ -608,9 +613,9 @@ yesBtn.addEventListener("click", async () => {
   startConfettiSides(650);
 
   showSeqText("YUPPII!! 💖🎉", { big: true });
-  await sleep(1700);
+  await sleep(3200);
   hideSeqTextFade();
-  await sleep(1100);
+  await sleep(1800);
 
   hideAllSeqVisuals();
   await fadeOutAudio(audSong, 1200);
@@ -649,15 +654,18 @@ yesBtn.addEventListener("click", async () => {
 
   seqGtr.classList.remove("shake");
   seqGtr.classList.add("driveOff");
-  await sleep(1300);
+  await sleep(1200);
 
- safeStop(audEngine);
-hideAllSeqVisuals();
+  safeStop(audEngine);
+  await sleep(2000);
+  hideAllSeqVisuals();
 
-/* BIG CLEAN TRANSITION (no glitch) */
-await fadeBetween(1200, 1200);
+/* HOLD DARK */
+if (edgeHearts) edgeHearts.classList.add("hidden");
+globalFade.classList.add("on");
+await sleep(900);
 
-/* MUSIC FIRST */
+/* MUSIC FIRST (while dark) */
 safePlay(audThankYou, 0.6, false);
 
 /* Show thankWrap, but keep text/photos invisible initially */
@@ -672,17 +680,18 @@ if (thankText) {
 photoRing.classList.remove("hidden");
 photoRing.classList.remove("show");
 
-/* let music lead */
-await sleep(900);
+/* let music lead in darkness */
+await sleep(5000);
 
-/* TEXT fades in */
+/* TEXT fades in as darkness clears */
+globalFade.classList.remove("on");
 if (thankText) {
   thankText.style.opacity = "1";
   thankText.style.transform = "translateY(0)";
 }
 
 /* let text land */
-await sleep(700);
+await sleep(3000);
 
 /* set images */
 setImg(us1, "assets/us-1.jpg");
@@ -707,6 +716,7 @@ await sleep(1200); // longer fade to black
 
 sequence.classList.add("hidden");
 finalPage.classList.remove("hidden");
+if (edgeHearts) edgeHearts.classList.remove("hidden");
 
 await sleep(200);  // let layout settle under black
 globalFade.classList.remove("on");
@@ -734,6 +744,7 @@ restartBtn.addEventListener("click", () => {
   safeStop(audEngine);
   safeStop(audTension);
   safeStop(audThankYou);
+  hideAllSeqVisuals();
 
   finished = false;
   noClicks = 0;
@@ -747,6 +758,7 @@ restartBtn.addEventListener("click", () => {
   setNoInlineAligned();
 
   finalPage.classList.add("hidden");
+  if (edgeHearts) edgeHearts.classList.remove("hidden");
 
   intro.style.display = "";
   intro.classList.remove("fadeOut");
