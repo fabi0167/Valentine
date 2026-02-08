@@ -228,12 +228,19 @@ async function fadeInAudio(audioEl, targetVol = 0.35, durationMs = 900, loop = t
   }
 }
 
-async function fadeBetween(ms = 360) {
+async function fadeBetween(msDark = 900, msBack = 900) {
   if (!globalFade) return;
+
+  // fade to black
   globalFade.classList.add("on");
-  await sleep(ms);
+  await sleep(msDark);
+
+  // hold black briefly (prevents glitch flash)
+  await sleep(250);
+
+  // fade back
   globalFade.classList.remove("on");
-  await sleep(120);
+  await sleep(msBack);
 }
 
 
@@ -644,35 +651,40 @@ yesBtn.addEventListener("click", async () => {
   seqGtr.classList.add("driveOff");
   await sleep(1300);
 
-  safeStop(audEngine);
-  hideAllSeqVisuals();
+ safeStop(audEngine);
+hideAllSeqVisuals();
 
- 
+/* BIG CLEAN TRANSITION (no glitch) */
+await fadeBetween(1200, 1200);
 
+/* MUSIC FIRST */
+safePlay(audThankYou, 0.6, false);
 
-  // Fade transition into thank-you scene
-  await fadeBetween(900);
+/* Show thankWrap, but keep text/photos invisible initially */
+thankWrap.classList.remove("hidden");
 
-  // start music FIRST (give it a tiny headstart)
-  audThankYou.load?.();
-  safePlay(audThankYou, 0.6, false);
-  await sleep(250);
+// reset fades
+if (thankText) {
+  thankText.classList.remove("hidden");
+  thankText.style.opacity = "0";
+  thankText.style.transform = "translateY(10px)";
+}
+photoRing.classList.remove("hidden");
+photoRing.classList.remove("show");
 
-  // show container, but keep text/photos hidden
-  thankWrap.classList.remove("hidden");
-  photoRing.classList.remove("hidden");
-  photoRing.classList.remove("show");
-  thankText.classList.add("hidden");
+/* let music lead */
+await sleep(900);
 
-  // delay so the music clearly leads
-  await sleep(900);
+/* TEXT fades in */
+if (thankText) {
+  thankText.style.opacity = "1";
+  thankText.style.transform = "translateY(0)";
+}
 
-// show text
-thankText.classList.remove("hidden");
-
-// then photos
+/* let text land */
 await sleep(700);
 
+/* set images */
 setImg(us1, "assets/us-1.jpg");
 setImg(us2, "assets/us-2.jpg");
 setImg(us3, "assets/us-3.jpg");
@@ -680,24 +692,26 @@ setImg(us4, "assets/us-4.jpg");
 setImg(us5, "assets/us-5.jpg");
 setImg(us6, "assets/us-6.jpg");
 setImg(us7, "assets/us-7.jpg");
-setImg(us8, "assets/us-8.jpg"); // <<< IMPORTANT: match your real file
+setImg(us8, "assets/us-8.jpg");
 
-await sleep(50);
+/* PHOTOS fade in (ring) */
+await sleep(60);
 photoRing.classList.add("show");
+
 
   // keep this scene on screen longer
   await sleep(20000);
 
-  if (globalFade) globalFade.classList.add("on");
-  await sleep(900);
+  globalFade.classList.add("on");
+await sleep(1200); // longer fade to black
 
-  
-  sequence.classList.add("hidden");
-  finalPage.classList.remove("hidden");
+sequence.classList.add("hidden");
+finalPage.classList.remove("hidden");
 
-  await sleep(120);
-  if (globalFade) globalFade.classList.remove("on");
-  await sleep(220);
+await sleep(200);  // let layout settle under black
+globalFade.classList.remove("on");
+await sleep(1200); // fade back in smoothly
+
 
   setImg(finalStone, "assets/love-stone.png");
   setImg(finalFlowerCat, "assets/cat-flowers.gif");

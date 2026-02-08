@@ -35,14 +35,15 @@ body {
 #globalFade{
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0);
+  background: #000;
+  opacity: 0;
   pointer-events: none;
-  transition: background 520ms ease;
-  z-index: 9998; /* below startOverlay (9999) but above everything else */
+  transition: opacity 900ms ease;
+  z-index: 9998;
 }
 
 #globalFade.on{
-  background: rgba(0,0,0,0.35);
+  opacity: 0.55;
 }
 
 
@@ -352,6 +353,10 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   z-index: 2;
   pointer-events: none;
   text-shadow: 0 12px 45px rgba(0,0,0,0.55);
+
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 900ms ease, transform 900ms ease;
 }
 
 .photoRing{
@@ -367,9 +372,10 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   object-fit: cover;
   border-radius: 18px;
   box-shadow: 0 14px 50px rgba(0,0,0,0.55);
+
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.98);
-  transition: opacity 650ms ease, transform 650ms ease;
+  transition: opacity 900ms ease, transform 900ms ease;
 }
 
 .photoRing.show .ringImg{
@@ -390,6 +396,17 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
 
 
+/* Fade helpers (no display:none pop) */
+.fadeIn{
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.fadeBase{
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 900ms ease, transform 900ms ease;
+}
 
 
 /* ===== Final page: centered card in the middle ===== */
@@ -429,11 +446,25 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   text-align: center;
 }
 
-.finalGrid {
+.finalGrid{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+
+  grid-template-areas:
+    "stone flowers"
+    "gtr   gtr";
 }
+
+.giftStone{ grid-area: stone; }
+.giftFlowers{ grid-area: flowers; }
+.giftGtr{ grid-area: gtr; }
+
+.giftGtr{
+  justify-self: center;
+  width: min(520px, 100%);
+}
+
 
 .finalItem {
   background: rgba(0,0,0,0.18);
