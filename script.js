@@ -536,12 +536,12 @@ yesBtn.addEventListener("click", async () => {
   await sleep(700);
 
   hideAllSeqVisuals();
-  setImg(seqImg, "assets/love-stone.png");
-  await sleep(1800);
+  await showImageSmooth("assets/love-stone.png", 3200, audStoneGift, 0.8);
+
 
   hideAllSeqVisuals();
-  setImg(seqImg, "assets/cat-flowers.gif");
-  await sleep(2000);
+  await showImageSmooth("assets/cat-flowers.gif", 3200, audFlowersGift, 0.7);
+
 
   hideAllSeqVisuals();
   seqGtrWrap.classList.remove("hidden");
@@ -563,6 +563,8 @@ yesBtn.addEventListener("click", async () => {
   await sleep(250);
 
   showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
+  safePlay(audThankYou, 0.8, false);
+
 
   photoRing.classList.remove("hidden");
   setImg(us1, "assets/us-1.jpg");
