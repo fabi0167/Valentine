@@ -58,7 +58,7 @@ let finished = false;
 let userInteracted = false;
 window.addEventListener("pointerdown", () => { userInteracted = true; }, { once: true });
 
-const GUITAR_DELAY_MS = 150; // change this number = earlier/later
+const GUITAR_DELAY_MS = 20; // change this number = earlier/later
 
 rose.addEventListener("animationstart", (e) => {
   if (e.animationName !== "roseSpin") return;
