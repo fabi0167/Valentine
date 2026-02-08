@@ -1,4 +1,7 @@
 // ===== Elements =====
+const startOverlay = document.getElementById("startOverlay");
+const startBtn = document.getElementById("startBtn");
+
 const confettiCanvas = document.getElementById("confetti");
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
@@ -126,7 +129,9 @@ async function playSeqVideo(path, { maxMs = 6000 } = {}) {
 
   hideAllSeqVisuals();
 
+  // Prepare + show
   seqVid.classList.remove("hidden");
+  seqVid.classList.remove("showFade"); // start invisible
   seqVid.src = path;
 
   // important for autoplay + audio
@@ -135,12 +140,16 @@ async function playSeqVideo(path, { maxMs = 6000 } = {}) {
   seqVid.autoplay = true;
   seqVid.controls = false;
 
-  // load first
   try { seqVid.load(); } catch {}
 
-  // play + wait until ended (or timeout)
+  // Fade in (next frame)
+  await sleep(50);
+  seqVid.classList.add("showFade");
+
+  // Play + wait until ended (or timeout)
   await new Promise((resolve) => {
     let done = false;
+
     const finish = () => {
       if (done) return;
       done = true;
@@ -156,23 +165,25 @@ async function playSeqVideo(path, { maxMs = 6000 } = {}) {
     seqVid.addEventListener("ended", finish);
     seqVid.addEventListener("error", finish);
 
-    // attempt play
     const p = seqVid.play();
     if (p && typeof p.catch === "function") {
-      p.catch(() => {
-        // if autoplay is blocked, resolve anyway so your flow continues
-        finish();
-      });
+      p.catch(() => finish()); // autoplay blocked -> continue flow
     }
 
-    // safety timeout (in case video never fires ended)
     setTimeout(finish, maxMs);
   });
 
-  // cleanup after playback
+  // Fade out
+  seqVid.classList.remove("showFade");
+  await sleep(600);
+
+  // Cleanup
   try { seqVid.pause(); } catch {}
   seqVid.classList.add("hidden");
+  seqVid.removeAttribute("src");
+  try { seqVid.load(); } catch {}
 }
+
 
 async function fadeOutAudio(audioEl, durationMs = 1000) {
   if (!audioEl) return;
@@ -253,7 +264,7 @@ async function runIntroOneByOne() {
   const lines = [
     { text: "Hello Wiktoria", holdMs: 2500 },
     { text: "A little birdie told me no one has asked you to be a Valentine yet.", holdMs: 3500 },
-    { text: "Well, don’t you worry, beautiful — your Romeo has come.", holdMs: 3500 },
+    { text: "Well, don’t you worry, beautiful — your Romeo has arrived!", holdMs: 3500 },
   ];
 
   async function showLine({ text, holdMs }) {
@@ -284,7 +295,13 @@ async function runIntroOneByOne() {
   // ✅ Start tension sound while choosing
   safePlay(audTension, 0.35, true);
 }
-runIntroOneByOne();
+
+startBtn.addEventListener("click", () => {
+  userInteracted = true;
+  startOverlay.remove();
+  runIntroOneByOne();
+});
+
 
 // ===== NO movement =====
 function slideNoButtonAway(ev) {
@@ -532,7 +549,7 @@ yesBtn.addEventListener("click", async () => {
   await sleep(300);
 
   // play cat kiss video (with its own audio)
-  await playSeqVideo("assets/cat-kiss.mp4", { maxMs: 9000 });
+  await playSeqVideo("assets/cat-kiss.mp4", { maxMs: 12000 });
 
   hideAllSeqVisuals();
   showSeqText("Here are your gifts…", { big: false });
@@ -541,11 +558,11 @@ yesBtn.addEventListener("click", async () => {
   await sleep(700);
 
   hideAllSeqVisuals();
-  await showImageSmooth("assets/love-stone.png", 3200, audStoneGift, 0.8);
+  await showImageSmooth("assets/love-stone.png", 5200, audStoneGift, 0.8);
 
 
   hideAllSeqVisuals();
-  await showImageSmooth("assets/cat-flowers.gif", 3200, audFlowersGift, 0.7);
+  await showImageSmooth("assets/cat-flowers.gif", 5200, audFlowersGift, 0.7);
 
 
   hideAllSeqVisuals();
@@ -599,6 +616,7 @@ restartBtn.addEventListener("click", () => {
   safeStop(audSong);
   safeStop(audEngine);
   safeStop(audTension);
+  safeStop(audThankYou);
 
   finished = false;
   noClicks = 0;
