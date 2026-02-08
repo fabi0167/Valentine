@@ -169,6 +169,24 @@ async function playSeqVideo(path, { maxMs = 6000 } = {}) {
   seqVid.classList.add("hidden");
 }
 
+async function fadeOutAudio(audioEl, durationMs = 1000) {
+  if (!audioEl) return;
+
+  const steps = 20;
+  const stepTime = durationMs / steps;
+  const startVol = audioEl.volume;
+
+  for (let i = steps; i >= 0; i--) {
+    audioEl.volume = startVol * (i / steps);
+    await sleep(stepTime);
+  }
+
+  safeStop(audioEl);
+}
+
+
+
+
 
 // ===== NO positioning helpers =====
 function setNoInlineAligned() {
@@ -472,10 +490,13 @@ yesBtn.addEventListener("click", async () => {
   showSeqText("YUPPII!! 💖🎉", { big: true });
   await sleep(1700);
   hideSeqTextFade();
-  await sleep(800);
+  await sleep(1100);
 
   hideAllSeqVisuals();
-  safeStop(audSong);
+  await fadeOutAudio(audSong, 1200);
+
+  // short calm pause before the kiss
+  await sleep(300);
 
   // play cat kiss video (with its own audio)
   await playSeqVideo("assets/cat-kiss.mp4", { maxMs: 9000 });
