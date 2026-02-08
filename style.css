@@ -333,7 +333,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   font-weight: 900;
   font-size: clamp(28px, 4vw, 48px);
   line-height: 1.15;
-  z-index: 2;   /* text above */
+  z-index: 2;
   pointer-events: none;
   text-shadow: 0 12px 45px rgba(0,0,0,0.55);
 }
@@ -341,7 +341,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 .photoRing{
   position: absolute;
   inset: 0;
-  z-index: 1;   /* images behind text */
+  z-index: 1;
 }
 
 .photoRing .ringImg{
@@ -370,6 +370,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 #us6 { left: 26%; top: 64%; }
 #us7 { left: 12%; top: 40%; }
 #us8 { left: 26%; top: 16%; }
+
 
 
 /* ===== Final page: centered card in the middle ===== */

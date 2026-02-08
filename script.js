@@ -22,10 +22,17 @@ const seqGtrWrap = document.getElementById("seqGtrWrap");
 const seqGtr = document.getElementById("seqGtr");
 const seqFade = document.getElementById("seqFade");
 const photoRing = document.getElementById("photoRing");
+const thankWrap = document.getElementById("thankWrap");
+
 const us1 = document.getElementById("us1");
 const us2 = document.getElementById("us2");
 const us3 = document.getElementById("us3");
 const us4 = document.getElementById("us4");
+const us5 = document.getElementById("us5");
+const us6 = document.getElementById("us6");
+const us7 = document.getElementById("us7");
+const us8 = document.getElementById("us8");
+
 
 // Final page
 const finalPage = document.getElementById("finalPage");
@@ -526,21 +533,39 @@ function hideSeqTextFade() {
 }
 
 function hideAllSeqVisuals() {
+  // text/image/gtr/video
   seqText.classList.add("hidden");
   seqImg.classList.add("hidden");
   seqGtrWrap.classList.add("hidden");
-  photoRing.classList.add("hidden");
+
+  // reset image fade
+  seqImg.classList.remove("showFade");
+  seqImg.removeAttribute("src");
+
+  // reset gtr
+  seqGtr.removeAttribute("src");
+  seqGtr.classList.remove("shake", "driveOff");
+
+  // reset seq text styles
+  seqText.classList.remove("seqFadeOut", "small");
+
+  // video reset
   if (seqVid) {
     seqVid.classList.add("hidden");
+    seqVid.classList.remove("showFade");
     try { seqVid.pause(); } catch {}
     seqVid.removeAttribute("src");
     try { seqVid.load(); } catch {}
   }
-  seqImg.removeAttribute("src");
-  seqGtr.removeAttribute("src");
-  seqText.classList.remove("seqFadeOut", "small");
-  seqGtr.classList.remove("shake", "driveOff");
+
+  // thank you scene reset
+  if (thankWrap) thankWrap.classList.add("hidden");
+  if (photoRing) {
+    photoRing.classList.add("hidden");
+    photoRing.classList.remove("show");
+  }
 }
+
 
 // ===== YES CLICK → sequence =====
 yesBtn.addEventListener("click", async () => {
@@ -608,19 +633,35 @@ yesBtn.addEventListener("click", async () => {
   await sleep(250);
   await fadeBetween(550);
 
-  //showSeqText("Thank you for being here.\nI love you. ❤️", { big: false });
-  safePlay(audThankYou, 0.2, false);
+  // Fade transition into thank-you scene
+await fadeBetween(550);
 
+// start thank-you audio (sooner + louder)
+safePlay(audThankYou, 0.6, false);
 
-  photoRing.classList.remove("hidden");
-  setImg(us1, "assets/us-1.jpg");
-  setImg(us2, "assets/us-2.jpg");
-  setImg(us3, "assets/us-3.jpg");
-  setImg(us4, "assets/us-4.jpg");
+// Show thank-you scene
+thankWrap.classList.remove("hidden");
+photoRing.classList.remove("hidden");
 
-  await sleep(12000);
-  hideSeqTextFade();
-  await sleep(900);
+// set images (use what you have)
+setImg(us1, "assets/us-1.jpg");
+setImg(us2, "assets/us-2.jpg");
+setImg(us3, "assets/us-3.jpg");
+setImg(us4, "assets/us-4.jpg");
+
+// if you don't have these yet, comment these 4 lines out for now
+setImg(us5, "assets/us-5.jpg");
+setImg(us6, "assets/us-6.jpg");
+setImg(us7, "assets/us-7.jpg");
+setImg(us8, "assets/us-8.png");
+
+// trigger ring fade-in
+await sleep(50);
+photoRing.classList.add("show");
+
+// keep this scene on screen longer
+await sleep(20000);
+
 
   sequence.classList.add("hidden");
   finalPage.classList.remove("hidden");
