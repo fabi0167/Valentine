@@ -550,6 +550,8 @@ yesBtn.addEventListener("click", async () => {
 
   // play cat kiss video (with its own audio)
   await playSeqVideo("assets/cat-kiss.mp4", { maxMs: 12000 });
+  await sleep(250);
+
 
   hideAllSeqVisuals();
   showSeqText("Here are your gifts…", { big: false });
