@@ -7,6 +7,8 @@ const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const toast = document.getElementById("toast");
 const card = document.getElementById("card");
+const globalFade = document.getElementById("globalFade");
+
 
 // Intro
 const intro = document.getElementById("intro");
@@ -40,13 +42,17 @@ const restartBtn = document.getElementById("restartBtn");
 
 // Final images
 const finalStone = document.getElementById("finalStone");
-const finalKissCat = document.getElementById("finalKissCat");
 const finalFlowerCat = document.getElementById("finalFlowerCat");
 const finalGtr = document.getElementById("finalGtr");
 const finalUs1 = document.getElementById("finalUs1");
 const finalUs2 = document.getElementById("finalUs2");
 const finalUs3 = document.getElementById("finalUs3");
 const finalUs4 = document.getElementById("finalUs4");
+const finalUs5 = document.getElementById("finalUs5");
+const finalUs6 = document.getElementById("finalUs6");
+const finalUs7 = document.getElementById("finalUs7");
+const finalUs8 = document.getElementById("finalUs8");
+
 
 // Audio
 const audPop = document.getElementById("audPop");
@@ -220,13 +226,14 @@ async function fadeInAudio(audioEl, targetVol = 0.35, durationMs = 900, loop = t
   }
 }
 
-async function fadeBetween(ms = 320) {
-  if (!seqFade) return;
-  seqFade.classList.add("on");
+async function fadeBetween(ms = 360) {
+  if (!globalFade) return;
+  globalFade.classList.add("on");
   await sleep(ms);
-  seqFade.classList.remove("on");
-  await sleep(120); // small settle, not another full ms
+  globalFade.classList.remove("on");
+  await sleep(120);
 }
+
 
 
 
@@ -672,7 +679,6 @@ photoRing.classList.add("show");
   await fadeBetween(420);
 
   setImg(finalStone, "assets/love-stone.png");
-  setImg(finalKissCat, "assets/cat-kiss.gif");
   setImg(finalFlowerCat, "assets/cat-flowers.gif");
   setImg(finalGtr, "assets/gtr.png");
 
@@ -680,6 +686,12 @@ photoRing.classList.add("show");
   setImg(finalUs2, "assets/us-2.jpg");
   setImg(finalUs3, "assets/us-3.jpg");
   setImg(finalUs4, "assets/us-4.jpg");
+  setImg(finalUs5, "assets/us-5.jpg");
+  setImg(finalUs6, "assets/us-6.jpg");
+  setImg(finalUs7, "assets/us-7.jpg");
+  setImg(finalUs8, "assets/us-8.jpg");
+
+  
 });
 
 restartBtn.addEventListener("click", () => {

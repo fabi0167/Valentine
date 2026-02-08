@@ -32,6 +32,20 @@ body {
   z-index: 9999;
 }
 
+#globalFade{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  pointer-events: none;
+  transition: background 520ms ease;
+  z-index: 9998; /* below startOverlay (9999) but above everything else */
+}
+
+#globalFade.on{
+  background: rgba(0,0,0,0.35);
+}
+
+
 #startBtn {
   font-size: 22px;
   padding: 18px 36px;
@@ -300,6 +314,8 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   background: rgba(0,0,0,0.35);
 }
 
+
+
 /* GTR animations */
 .shake { animation: shake 0.08s infinite; }
 @keyframes shake {
@@ -362,14 +378,16 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 }
 
 /* positions around a circle */
-#us1 { left: 50%; top: 4%;  }
-#us2 { left: 80%; top: 12%; }
-#us3 { left: 94%; top: 40%; }
-#us4 { left: 80%; top: 68%; }
-#us5 { left: 50%; top: 88%; }
-#us6 { left: 20%; top: 68%; }
-#us7 { left: 6%;  top: 40%; }
-#us8 { left: 20%; top: 12%; }
+/* wider ring (more left/right spread too) */
+#us1 { left: 50%; top: 3%;  }
+#us2 { left: 84%; top: 10%; }
+#us3 { left: 97%; top: 40%; }
+#us4 { left: 84%; top: 70%; }
+#us5 { left: 50%; top: 90%; }
+#us6 { left: 16%; top: 70%; }
+#us7 { left: 3%;  top: 40%; }
+#us8 { left: 16%; top: 10%; }
+
 
 
 
