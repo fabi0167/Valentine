@@ -58,6 +58,22 @@ let finished = false;
 let userInteracted = false;
 window.addEventListener("pointerdown", () => { userInteracted = true; }, { once: true });
 
+const GUITAR_DELAY_MS = 150; // change this number = earlier/later
+
+rose.addEventListener("animationstart", (e) => {
+  if (e.animationName !== "roseSpin") return;
+
+  setTimeout(() => {
+    if (!userInteracted) return;
+
+    audGuitar.currentTime = 0;
+    audGuitar.volume = 0.8;
+    audGuitar.play().catch(() => {});
+    console.log("ROSE SOUND FIRED (animation-based)");
+  }, GUITAR_DELAY_MS);
+});
+
+
 const noFlow = [
   "Are you sure? 😏",
   "Confirm…",
@@ -122,17 +138,9 @@ async function runIntroOneByOne() {
 
   for (const line of lines) await showLine(line);
 
-  // Rose entrance + guitar note
+  // Rose entrance 
   rose.classList.add("flyIn");
-  setTimeout(() => {
-  if (userInteracted) {
-    audGuitar.currentTime = 0;
-    audGuitar.volume = 0.8;
-    audGuitar.play().catch(() => {});
-    console.log("ROSE SOUND FIRED");
-
-  }
-}, 100);
+  
   //setTimeout(() => safePlayLoose(audGuitar, 0.75), 220);
 
   await sleep(1200);
