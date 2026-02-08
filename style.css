@@ -412,6 +412,13 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
   padding: 22px;
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* old Edge */
+}
+
+.finalCard::-webkit-scrollbar{
+  width: 0;
+  height: 0;
 }
 
 .finalTitle {
@@ -424,7 +431,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
 .finalGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 14px;
 }
 
@@ -446,7 +453,8 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   max-height: 320px;
   object-fit: contain;
   border-radius: 16px;
-  
+  display: block;
+  margin: 0 auto;   /* centers the image */
 }
 
 .finalPhotos {

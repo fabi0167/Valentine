@@ -25,6 +25,8 @@ const seqGtr = document.getElementById("seqGtr");
 const seqFade = document.getElementById("seqFade");
 const photoRing = document.getElementById("photoRing");
 const thankWrap = document.getElementById("thankWrap");
+const thankText = document.getElementById("thankText");
+
 
 const us1 = document.getElementById("us1");
 const us2 = document.getElementById("us2");
@@ -527,8 +529,12 @@ function setImg(imgEl, path) {
   if (!imgEl) return;
   imgEl.classList.remove("hidden");
   imgEl.onerror = () => { imgEl.classList.add("hidden"); };
-  imgEl.src = path;
+
+  // cache-bust so GitHub pages updates always show
+  const bust = `?v=${Date.now()}`;
+  imgEl.src = path + bust;
 }
+
 
 function showSeqText(text, { big = true } = {}) {
   seqText.textContent = text;
@@ -644,14 +650,25 @@ yesBtn.addEventListener("click", async () => {
 
 
   // Fade transition into thank-you scene
-  await fadeBetween(550);
+  await fadeBetween(900);
 
 // start thank-you audio (sooner + louder)
 safePlay(audThankYou, 0.6, false);
 
-// Show thank-you scene
+// show the thank container (but NOT text/photos yet)
 thankWrap.classList.remove("hidden");
 photoRing.classList.remove("hidden");
+photoRing.classList.remove("show");
+if (thankText) thankText.classList.add("hidden");
+
+// wait a bit so music leads
+await sleep(900);
+
+// show text
+if (thankText) thankText.classList.remove("hidden");
+
+// small pause so text lands
+await sleep(700);
 
 // set images (use what you have)
 setImg(us1, "assets/us-1.jpg");
@@ -672,11 +689,16 @@ photoRing.classList.add("show");
   // keep this scene on screen longer
   await sleep(20000);
 
-  await fadeBetween(420);
+  if (globalFade) globalFade.classList.add("on");
+  await sleep(900);
+
+  
   sequence.classList.add("hidden");
   finalPage.classList.remove("hidden");
 
-  await fadeBetween(420);
+  await sleep(120);
+  if (globalFade) globalFade.classList.remove("on");
+  await sleep(220);
 
   setImg(finalStone, "assets/love-stone.png");
   setImg(finalFlowerCat, "assets/cat-flowers.gif");
