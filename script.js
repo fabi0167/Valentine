@@ -220,13 +220,14 @@ async function fadeInAudio(audioEl, targetVol = 0.35, durationMs = 900, loop = t
   }
 }
 
-async function fadeBetween(ms = 650) {
+async function fadeBetween(ms = 320) {
   if (!seqFade) return;
   seqFade.classList.add("on");
   await sleep(ms);
   seqFade.classList.remove("on");
-  await sleep(ms);
+  await sleep(120); // small settle, not another full ms
 }
+
 
 
 
@@ -249,7 +250,7 @@ async function showImageSmooth(path, holdMs, audioEl = null, volume = 0.7) {
 
   // fade out
   seqImg.classList.remove("showFade");
-  await sleep(650);
+  await sleep(1150);
 
   // stop audio after fade (optional)
   if (audioEl) safeStop(audioEl);
@@ -630,11 +631,13 @@ yesBtn.addEventListener("click", async () => {
 
   safeStop(audEngine);
   hideAllSeqVisuals();
-  await sleep(250);
-  await fadeBetween(550);
+
+  // faster scene cut into thank-you
+  await fadeBetween(320);
+
 
   // Fade transition into thank-you scene
-await fadeBetween(550);
+  await fadeBetween(550);
 
 // start thank-you audio (sooner + louder)
 safePlay(audThankYou, 0.6, false);
@@ -659,12 +662,14 @@ setImg(us8, "assets/us-8.png");
 await sleep(50);
 photoRing.classList.add("show");
 
-// keep this scene on screen longer
-await sleep(20000);
+  // keep this scene on screen longer
+  await sleep(20000);
 
-
+  await fadeBetween(420);
   sequence.classList.add("hidden");
   finalPage.classList.remove("hidden");
+
+  await fadeBetween(420);
 
   setImg(finalStone, "assets/love-stone.png");
   setImg(finalKissCat, "assets/cat-kiss.gif");

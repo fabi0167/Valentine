@@ -244,7 +244,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
   border-radius: 18px;
   box-shadow: 0 18px 70px rgba(0,0,0,0.45);
   opacity: 0;
-  transition: opacity 600ms ease;
+  transition: opacity 1100ms ease;
   display: block;
  
 }
@@ -255,7 +255,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
 .seqVid {
   opacity: 0;
-  transition: opacity 600ms ease;
+  transition: opacity 1100ms ease;
   margin: 18px auto 0;
   max-width: min(520px, 88vw);
   max-height: 340px;
@@ -362,14 +362,15 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 }
 
 /* positions around a circle */
-#us1 { left: 50%; top: 8%;  }
-#us2 { left: 74%; top: 16%; }
-#us3 { left: 88%; top: 40%; }
-#us4 { left: 74%; top: 64%; }
-#us5 { left: 50%; top: 82%; }
-#us6 { left: 26%; top: 64%; }
-#us7 { left: 12%; top: 40%; }
-#us8 { left: 26%; top: 16%; }
+#us1 { left: 50%; top: 4%;  }
+#us2 { left: 80%; top: 12%; }
+#us3 { left: 94%; top: 40%; }
+#us4 { left: 80%; top: 68%; }
+#us5 { left: 50%; top: 88%; }
+#us6 { left: 20%; top: 68%; }
+#us7 { left: 6%;  top: 40%; }
+#us8 { left: 20%; top: 12%; }
+
 
 
 
