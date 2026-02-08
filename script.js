@@ -654,10 +654,11 @@ yesBtn.addEventListener("click", async () => {
  safeStop(audEngine);
 hideAllSeqVisuals();
 
-/* BIG CLEAN TRANSITION (no glitch) */
-await fadeBetween(1200, 1200);
+/* HOLD DARK */
+globalFade.classList.add("on");
+await sleep(400);
 
-/* MUSIC FIRST */
+/* MUSIC FIRST (while dark) */
 safePlay(audThankYou, 0.6, false);
 
 /* Show thankWrap, but keep text/photos invisible initially */
@@ -672,8 +673,12 @@ if (thankText) {
 photoRing.classList.remove("hidden");
 photoRing.classList.remove("show");
 
-/* let music lead */
-await sleep(900);
+/* let music lead in darkness */
+await sleep(5000);
+
+/* fade back from dark */
+globalFade.classList.remove("on");
+await sleep(600);
 
 /* TEXT fades in */
 if (thankText) {
@@ -682,7 +687,7 @@ if (thankText) {
 }
 
 /* let text land */
-await sleep(700);
+await sleep(3000);
 
 /* set images */
 setImg(us1, "assets/us-1.jpg");
