@@ -43,8 +43,9 @@ const audConfetti = document.getElementById("audConfetti");
 const audYuppi = document.getElementById("audYuppi");
 const audSong = document.getElementById("audSong");
 const audEngine = document.getElementById("audEngine");
+const audTension = document.getElementById("audTension");
 
-// NEW: guitar note for rose entrance
+// Guitar note (your file: assets/guitar-note.mp3)
 const audGuitar = new Audio("assets/guitar-note.mp3");
 audGuitar.preload = "auto";
 
@@ -54,25 +55,14 @@ let yesScale = 1;
 let noScale = 1;
 let finished = false;
 
-// allow audio after first user gesture
+// ✅ NO starts inline next to YES; becomes dodging only after NO is tried
+let noIsDodging = false;
+
+// allow audio after first user gesture (browser rule)
 let userInteracted = false;
-window.addEventListener("pointerdown", () => { userInteracted = true; }, { once: true });
-
-const GUITAR_DELAY_MS = 20; // change this number = earlier/later
-
-rose.addEventListener("animationstart", (e) => {
-  if (e.animationName !== "roseSpin") return;
-
-  setTimeout(() => {
-    if (!userInteracted) return;
-
-    audGuitar.currentTime = 0;
-    audGuitar.volume = 0.8;
-    audGuitar.play().catch(() => {});
-    console.log("ROSE SOUND FIRED (animation-based)");
-  }, GUITAR_DELAY_MS);
+["click", "mousemove", "keydown", "touchstart"].forEach(evt => {
+  window.addEventListener(evt, () => { userInteracted = true; }, { once: true });
 });
-
 
 const noFlow = [
   "Are you sure? 😏",
@@ -99,7 +89,6 @@ function safePlay(audioEl, volume = 1, loop = false) {
 }
 
 function safePlayLoose(audioEl, volume = 1) {
-  // for Audio() objects too
   if (!userInteracted) return;
   if (!audioEl) return;
   try {
@@ -116,6 +105,41 @@ function safeStop(audioEl) {
     audioEl.pause();
     audioEl.currentTime = 0;
   } catch {}
+}
+
+// ===== Guitar timing synced to animation start =====
+const GUITAR_DELAY_MS = 20; // you set it to 20 (earlier)
+
+rose.addEventListener("animationstart", (e) => {
+  if (e.animationName !== "roseSpin") return;
+  setTimeout(() => safePlayLoose(audGuitar, 0.8), GUITAR_DELAY_MS);
+});
+
+// ===== NO inline/absolute helpers =====
+function setNoInlineAligned() {
+  noIsDodging = false;
+  noBtn.style.position = "static";
+  noBtn.style.left = "";
+  noBtn.style.top = "";
+  noBtn.style.transform = `scale(${noScale})`;
+  noBtn.style.opacity = "1";
+  noBtn.style.pointerEvents = "auto";
+}
+
+function setNoAbsoluteForDodging() {
+  if (noIsDodging) return;
+  noIsDodging = true;
+
+  const area = document.getElementById("buttons");
+  const rect = area.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+
+  const left = btnRect.left - rect.left;
+  const top  = btnRect.top - rect.top;
+
+  noBtn.style.position = "absolute";
+  noBtn.style.left = `${left}px`;
+  noBtn.style.top  = `${top}px`;
 }
 
 // ===== Intro timings =====
@@ -138,11 +162,8 @@ async function runIntroOneByOne() {
 
   for (const line of lines) await showLine(line);
 
-  // Rose entrance 
+  // Rose entrance (sound is handled by animationstart listener)
   rose.classList.add("flyIn");
-  
-  //setTimeout(() => safePlayLoose(audGuitar, 0.75), 220);
-
   await sleep(1200);
 
   intro.classList.add("fadeOut");
@@ -150,24 +171,17 @@ async function runIntroOneByOne() {
 
   intro.style.display = "none";
   card.classList.remove("hidden");
-  placeNoButtonInitial();
+
+  // ✅ Start aligned + start tension music
+  setNoInlineAligned();
+  safePlay(audTension, 0.35, true);
 }
 runIntroOneByOne();
 
-// ===== NO placement + behavior =====
-function placeNoButtonInitial() {
-  const area = document.getElementById("buttons");
-  const rect = area.getBoundingClientRect();
-  noBtn.style.left = `${rect.width * 0.63}px`;
-  noBtn.style.top = `${rect.height * 0.20}px`;
-}
-
-window.addEventListener("resize", () => {
-  if (!card.classList.contains("hidden")) placeNoButtonInitial();
-});
-
+// ===== NO movement =====
 function slideNoButtonAway(ev) {
   if (finished) return;
+  if (!noIsDodging) return; // ✅ only dodge after NO was tried
 
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
@@ -221,9 +235,13 @@ function slideNoButtonAway(ev) {
 noBtn.addEventListener("mousemove", slideNoButtonAway);
 noBtn.addEventListener("mouseover", slideNoButtonAway);
 
+// ===== NO clicked: activate dodging + scaling =====
 noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (finished) return;
+
+  // ✅ first click activates dodging mode (switch to absolute at current spot)
+  setNoAbsoluteForDodging();
 
   noClicks++;
   safePlay(audPop, 0.35);
@@ -239,6 +257,9 @@ noBtn.addEventListener("click", (e) => {
     noBtn.style.opacity = "0";
     noBtn.style.pointerEvents = "none";
     toast.textContent = "NO has left the chat. 🙂";
+
+    // ✅ stop tension sound when NO is gone
+    safeStop(audTension);
   } else {
     slideNoButtonAway(e);
   }
@@ -247,6 +268,7 @@ noBtn.addEventListener("click", (e) => {
 function applyButtonScales() {
   yesBtn.style.transform = `scale(${yesScale})`;
   yesBtn.style.fontSize = `${Math.round(16 * yesScale)}px`;
+
   noBtn.style.transform = `scale(${noScale})`;
   noBtn.style.fontSize = `${Math.round(16 * Math.max(0.8, noScale))}px`;
 }
@@ -291,7 +313,7 @@ function spawnConfettiBurst({ count, originX, originY, vxBias }) {
   if (!rafId) loop();
 }
 
-function startConfettiSides(perSide = 520) {
+function startConfettiSides(perSide = 650) {
   spawnConfettiBurst({ count: perSide, originX: 0.06, originY: 0.55, vxBias: +7.0 });
   spawnConfettiBurst({ count: perSide, originX: 0.94, originY: 0.55, vxBias: -7.0 });
 }
@@ -361,6 +383,9 @@ function hideAllSeqVisuals() {
 yesBtn.addEventListener("click", async () => {
   if (finished) return;
   finished = true;
+
+  // ✅ stop tension sound once she decides
+  safeStop(audTension);
 
   card.classList.add("hidden");
   sequence.classList.remove("hidden");
@@ -444,6 +469,7 @@ yesBtn.addEventListener("click", async () => {
 restartBtn.addEventListener("click", () => {
   safeStop(audSong);
   safeStop(audEngine);
+  safeStop(audTension);
 
   finished = false;
   noClicks = 0;
@@ -451,9 +477,10 @@ restartBtn.addEventListener("click", () => {
   noScale = 1;
   applyButtonScales();
 
-  noBtn.style.opacity = "1";
-  noBtn.style.pointerEvents = "auto";
   toast.textContent = "";
+
+  // reset NO to aligned start
+  setNoInlineAligned();
 
   finalPage.classList.add("hidden");
 
