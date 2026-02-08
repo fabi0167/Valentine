@@ -55,8 +55,8 @@ let yesScale = 1;
 let noScale = 1;
 let finished = false;
 
-// ✅ NO starts inline next to YES; becomes dodging only after NO is tried
-let noIsDodging = false;
+// ✅ Start aligned (inline), but dodging activates on FIRST HOVER
+let noIsAbsolute = false;
 
 // allow audio after first user gesture (browser rule)
 let userInteracted = false;
@@ -108,27 +108,27 @@ function safeStop(audioEl) {
 }
 
 // ===== Guitar timing synced to animation start =====
-const GUITAR_DELAY_MS = 20; // you set it to 20 (earlier)
+const GUITAR_DELAY_MS = 20;
 
 rose.addEventListener("animationstart", (e) => {
   if (e.animationName !== "roseSpin") return;
   setTimeout(() => safePlayLoose(audGuitar, 0.8), GUITAR_DELAY_MS);
 });
 
-// ===== NO inline/absolute helpers =====
+// ===== NO positioning helpers =====
 function setNoInlineAligned() {
-  noIsDodging = false;
+  noIsAbsolute = false;
   noBtn.style.position = "static";
   noBtn.style.left = "";
   noBtn.style.top = "";
-  noBtn.style.transform = `scale(${noScale})`;
   noBtn.style.opacity = "1";
   noBtn.style.pointerEvents = "auto";
+  noBtn.style.transform = `scale(${noScale})`;
 }
 
-function setNoAbsoluteForDodging() {
-  if (noIsDodging) return;
-  noIsDodging = true;
+function makeNoAbsoluteAtCurrentSpot() {
+  if (noIsAbsolute) return;
+  noIsAbsolute = true;
 
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
@@ -162,7 +162,7 @@ async function runIntroOneByOne() {
 
   for (const line of lines) await showLine(line);
 
-  // Rose entrance (sound is handled by animationstart listener)
+  // Rose entrance
   rose.classList.add("flyIn");
   await sleep(1200);
 
@@ -172,8 +172,10 @@ async function runIntroOneByOne() {
   intro.style.display = "none";
   card.classList.remove("hidden");
 
-  // ✅ Start aligned + start tension music
+  // ✅ Start aligned
   setNoInlineAligned();
+
+  // ✅ Start tension sound while choosing
   safePlay(audTension, 0.35, true);
 }
 runIntroOneByOne();
@@ -181,7 +183,6 @@ runIntroOneByOne();
 // ===== NO movement =====
 function slideNoButtonAway(ev) {
   if (finished) return;
-  if (!noIsDodging) return; // ✅ only dodge after NO was tried
 
   const area = document.getElementById("buttons");
   const rect = area.getBoundingClientRect();
@@ -232,16 +233,27 @@ function slideNoButtonAway(ev) {
   noBtn.style.top  = `${newTop}px`;
 }
 
-noBtn.addEventListener("mousemove", slideNoButtonAway);
-noBtn.addEventListener("mouseover", slideNoButtonAway);
+// ✅ On FIRST HOVER: convert to absolute at same spot, then slide away
+function activateDodgingOnHover(ev) {
+  if (finished) return;
 
-// ===== NO clicked: activate dodging + scaling =====
+  // convert from inline->absolute so it can move
+  makeNoAbsoluteAtCurrentSpot();
+
+  // move away immediately
+  slideNoButtonAway(ev);
+}
+
+noBtn.addEventListener("mouseover", activateDodgingOnHover);
+noBtn.addEventListener("mousemove", (ev) => {
+  if (!noIsAbsolute) return; // only start moving after first hover converts it
+  slideNoButtonAway(ev);
+});
+
+// ===== NO clicked: scaling + messages =====
 noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   if (finished) return;
-
-  // ✅ first click activates dodging mode (switch to absolute at current spot)
-  setNoAbsoluteForDodging();
 
   noClicks++;
   safePlay(audPop, 0.35);
@@ -257,11 +269,7 @@ noBtn.addEventListener("click", (e) => {
     noBtn.style.opacity = "0";
     noBtn.style.pointerEvents = "none";
     toast.textContent = "NO has left the chat. 🙂";
-
-    // ✅ stop tension sound when NO is gone
     safeStop(audTension);
-  } else {
-    slideNoButtonAway(e);
   }
 });
 
@@ -384,7 +392,6 @@ yesBtn.addEventListener("click", async () => {
   if (finished) return;
   finished = true;
 
-  // ✅ stop tension sound once she decides
   safeStop(audTension);
 
   card.classList.add("hidden");
@@ -479,7 +486,7 @@ restartBtn.addEventListener("click", () => {
 
   toast.textContent = "";
 
-  // reset NO to aligned start
+  // reset NO
   setNoInlineAligned();
 
   finalPage.classList.add("hidden");
