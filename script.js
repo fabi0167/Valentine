@@ -612,9 +612,9 @@ yesBtn.addEventListener("click", async () => {
   startConfettiSides(650);
 
   showSeqText("YUPPII!! 💖🎉", { big: true });
-  await sleep(2600);
+  await sleep(3200);
   hideSeqTextFade();
-  await sleep(1600);
+  await sleep(1800);
 
   hideAllSeqVisuals();
   await fadeOutAudio(audSong, 1200);
@@ -656,7 +656,8 @@ yesBtn.addEventListener("click", async () => {
   await sleep(1300);
   await sleep(2300);
 
- safeStop(audEngine);
+  safeStop(audEngine);
+  await sleep(2000);
 hideAllSeqVisuals();
 
 /* HOLD DARK */
