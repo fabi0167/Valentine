@@ -185,6 +185,34 @@ async function fadeOutAudio(audioEl, durationMs = 1000) {
 }
 
 
+async function showImageSmooth(path, holdMs, audioEl = null, volume = 0.7) {
+  hideAllSeqVisuals();
+
+  // show image
+  seqImg.classList.remove("hidden", "showFade");
+  seqImg.src = path;
+
+  // fade in
+  await sleep(40);
+  seqImg.classList.add("showFade");
+
+  // start audio for the duration (optional)
+  if (audioEl) safePlay(audioEl, volume, false);
+
+  // hold on screen
+  await sleep(holdMs);
+
+  // fade out
+  seqImg.classList.remove("showFade");
+  await sleep(650);
+
+  // stop audio after fade (optional)
+  if (audioEl) safeStop(audioEl);
+
+  // hide image
+  seqImg.classList.add("hidden");
+  seqImg.removeAttribute("src");
+}
 
 
 
