@@ -132,8 +132,8 @@ async function runIntroOneByOne() {
     console.log("ROSE SOUND FIRED");
 
   }
-}, 50);
-  setTimeout(() => safePlayLoose(audGuitar, 0.75), 220);
+}, 220);
+  setTimeout(() => safePlayLoose(audGuitar, 0.75), 100);
 
   await sleep(1200);
 
