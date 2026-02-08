@@ -653,16 +653,15 @@ yesBtn.addEventListener("click", async () => {
 
   seqGtr.classList.remove("shake");
   seqGtr.classList.add("driveOff");
-  await sleep(1300);
-  await sleep(2300);
+  await sleep(1200);
 
   safeStop(audEngine);
   await sleep(2000);
-hideAllSeqVisuals();
+  hideAllSeqVisuals();
 
 /* HOLD DARK */
 globalFade.classList.add("on");
-await sleep(400);
+await sleep(900);
 
 /* MUSIC FIRST (while dark) */
 safePlay(audThankYou, 0.6, false);
@@ -682,11 +681,8 @@ photoRing.classList.remove("show");
 /* let music lead in darkness */
 await sleep(5000);
 
-/* fade back from dark */
+/* TEXT fades in as darkness clears */
 globalFade.classList.remove("on");
-await sleep(600);
-
-/* TEXT fades in */
 if (thankText) {
   thankText.style.opacity = "1";
   thankText.style.transform = "translateY(0)";
