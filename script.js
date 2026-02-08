@@ -497,6 +497,10 @@ function spawnConfettiBurst({ count, originX, originY, vxBias }) {
 function startConfettiSides(perSide = 650) {
   spawnConfettiBurst({ count: perSide, originX: 0.06, originY: 0.55, vxBias: +7.0 });
   spawnConfettiBurst({ count: perSide, originX: 0.94, originY: 0.55, vxBias: -7.0 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.08, originY: 0.2, vxBias: +5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.92, originY: 0.2, vxBias: -5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.08, originY: 0.85, vxBias: +5.5 });
+  spawnConfettiBurst({ count: Math.round(perSide * 0.7), originX: 0.92, originY: 0.85, vxBias: -5.5 });
 }
 
 function loop() {
@@ -608,9 +612,9 @@ yesBtn.addEventListener("click", async () => {
   startConfettiSides(650);
 
   showSeqText("YUPPII!! 💖🎉", { big: true });
-  await sleep(1700);
+  await sleep(2600);
   hideSeqTextFade();
-  await sleep(1100);
+  await sleep(1600);
 
   hideAllSeqVisuals();
   await fadeOutAudio(audSong, 1200);
@@ -650,6 +654,7 @@ yesBtn.addEventListener("click", async () => {
   seqGtr.classList.remove("shake");
   seqGtr.classList.add("driveOff");
   await sleep(1300);
+  await sleep(2300);
 
  safeStop(audEngine);
 hideAllSeqVisuals();
