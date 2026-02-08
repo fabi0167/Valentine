@@ -655,7 +655,7 @@ yesBtn.addEventListener("click", async () => {
 hideAllSeqVisuals();
 
 /* BIG CLEAN TRANSITION (no glitch) */
-await fadeBetween(1200, 1200);
+await fadeBetween(900, 900);
 
 /* MUSIC FIRST */
 safePlay(audThankYou, 0.6, false);
@@ -673,7 +673,7 @@ photoRing.classList.remove("hidden");
 photoRing.classList.remove("show");
 
 /* let music lead */
-await sleep(900);
+await sleep(2500);
 
 /* TEXT fades in */
 if (thankText) {
@@ -682,7 +682,7 @@ if (thankText) {
 }
 
 /* let text land */
-await sleep(700);
+await sleep(2000);
 
 /* set images */
 setImg(us1, "assets/us-1.jpg");
