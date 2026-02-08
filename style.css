@@ -46,6 +46,27 @@ body {
   opacity: 0.55;
 }
 
+.edgeHearts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  font-size: clamp(18px, 2.2vw, 30px);
+  opacity: 0.6;
+}
+
+.edgeHeart {
+  position: absolute;
+  text-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.heartTopLeft { top: 18px; left: 18px; }
+.heartTopRight { top: 18px; right: 18px; }
+.heartMidLeft { top: 45%; left: 14px; }
+.heartMidRight { top: 45%; right: 14px; }
+.heartBottomLeft { bottom: 18px; left: 18px; }
+.heartBottomRight { bottom: 18px; right: 18px; }
+
 
 #startBtn {
   font-size: 22px;
@@ -356,7 +377,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 900ms ease, transform 900ms ease;
+  transition: opacity 1800ms ease, transform 1800ms ease;
 }
 
 .photoRing{
@@ -375,7 +396,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.98);
-  transition: opacity 900ms ease, transform 900ms ease;
+  transition: opacity 1800ms ease, transform 1800ms ease;
 }
 
 .photoRing.show .ringImg{
