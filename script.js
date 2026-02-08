@@ -244,11 +244,15 @@ function activateDodgingOnHover(ev) {
   slideNoButtonAway(ev);
 }
 
-noBtn.addEventListener("mouseover", activateDodgingOnHover);
-noBtn.addEventListener("mousemove", (ev) => {
-  if (!noIsAbsolute) return; // only start moving after first hover converts it
+// Works reliably on mouse + trackpad + pen devices
+noBtn.addEventListener("pointerenter", activateDodgingOnHover);
+noBtn.addEventListener("mouseenter", activateDodgingOnHover); // extra safety
+
+noBtn.addEventListener("pointermove", (ev) => {
+  if (!noIsAbsolute) return;
   slideNoButtonAway(ev);
 });
+
 
 // ===== NO clicked: scaling + messages =====
 noBtn.addEventListener("click", (e) => {
