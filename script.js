@@ -45,6 +45,11 @@ const audYuppi = document.getElementById("audYuppi");
 const audSong = document.getElementById("audSong");
 const audEngine = document.getElementById("audEngine");
 const audTension = document.getElementById("audTension");
+const audStoneGift = document.getElementById("audStoneGift");
+const audFlowersGift = document.getElementById("audFlowersGift");
+const audGtrGift = document.getElementById("audGtrGift");
+const audThankYou = document.getElementById("audThankYou");
+
 
 // Guitar note (your file: assets/guitar-note.mp3)
 const audGuitar = new Audio("assets/guitar-note.mp3");
