@@ -741,6 +741,7 @@ restartBtn.addEventListener("click", () => {
   safeStop(audEngine);
   safeStop(audTension);
   safeStop(audThankYou);
+  hideAllSeqVisuals();
 
   finished = false;
   noClicks = 0;
