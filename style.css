@@ -356,7 +356,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
   opacity: 0;
   transform: translateY(10px);
-  transition: opacity 900ms ease, transform 900ms ease;
+  transition: opacity 1800ms ease, transform 1800ms ease;
 }
 
 .photoRing{
@@ -375,7 +375,7 @@ h1 { margin: 0; font-size: clamp(26px, 4vw, 36px); letter-spacing: 0.2px; }
 
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.98);
-  transition: opacity 900ms ease, transform 900ms ease;
+  transition: opacity 1800ms ease, transform 1800ms ease;
 }
 
 .photoRing.show .ringImg{
