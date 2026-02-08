@@ -51,8 +51,8 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: 5;
-  font-size: clamp(18px, 2.2vw, 30px);
-  opacity: 0.6;
+  font-size: clamp(42px, 7vw, 96px);
+  opacity: 0.45;
 }
 
 .edgeHeart {
@@ -60,12 +60,14 @@ body {
   text-shadow: 0 6px 16px rgba(0,0,0,0.4);
 }
 
-.heartTopLeft { top: 18px; left: 18px; }
-.heartTopRight { top: 18px; right: 18px; }
-.heartMidLeft { top: 45%; left: 14px; }
-.heartMidRight { top: 45%; right: 14px; }
-.heartBottomLeft { bottom: 18px; left: 18px; }
-.heartBottomRight { bottom: 18px; right: 18px; }
+.heartTopLeft { top: 7vh; left: 6vw; }
+.heartTopCenter { top: 4vh; left: 50%; transform: translateX(-50%); }
+.heartTopRight { top: 7vh; right: 6vw; }
+.heartMidLeft { top: 45%; left: 4vw; transform: translateY(-50%); }
+.heartMidRight { top: 45%; right: 4vw; transform: translateY(-50%); }
+.heartBottomLeft { bottom: 7vh; left: 6vw; }
+.heartBottomCenter { bottom: 4vh; left: 50%; transform: translateX(-50%); }
+.heartBottomRight { bottom: 7vh; right: 6vw; }
 
 
 #startBtn {
